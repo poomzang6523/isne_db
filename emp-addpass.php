@@ -24,12 +24,12 @@
 </html>
 
 <?php
+    /*
+    This command below need to execute on your console log in phpmyadmin naja
+    */
+    //ALTER TABLE `employees` ADD `empPass` VARCHAR(255) NOT NULL AFTER `employeeNumber`;
+    
     $con = mysqli_connect("localhost","root","","db");
-    // if (!$con) {
-    //     die("Connection failed: " . mysqli_connect_error());
-    // }
-    // else
-    //     echo "OK";
     session_start();
     if (isset($_POST['empNo'], $_POST['pass']))
     {
