@@ -48,7 +48,7 @@
         <div class="mobile-nav">
             <!-- Navbar Brand -->
             <div class="amado-navbar-brand">
-                <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
+                <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Navbar Toggler -->
             <div class="amado-navbar-toggler">
@@ -64,7 +64,7 @@
             </div>
             <!-- Logo -->
             <div class="logo">
-                <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
+                <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
             <nav class="amado-nav">
@@ -120,7 +120,30 @@
                                 <td>2005-04-22</td>
                                 <td>2005-04-29</td>
                                 <td>2005-04-27</td>
-                                <td>Shipped</td>
+                                <td>
+                                    <!-- <select class="form-control">
+                                        <option selected>Shipped</option>
+                                        <option value="1">Cancelled</option>
+                                        <option value="2">Disputed</option>
+                                        <option value="3">In process</option>
+                                        <option value="4">On hold</option>
+                                        <option value="5">Resolved</option>
+                                        <option value="6">Shipped</option>
+                                    </select> -->
+                                    <div class="dropdown">
+                                        <button class="btn btn-warning btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Shipped
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                            <button class="dropdown-item" type="button">Cancelled</button>
+                                            <button class="dropdown-item" type="button">Disputed</button>
+                                            <button class="dropdown-item" type="button">In process</button>
+                                            <button class="dropdown-item" type="button">On hold</button>
+                                            <button class="dropdown-item" type="button">Resolved</button>
+                                            <button class="dropdown-item" type="button">Shipped</button>
+                                        </div>
+                                    </div>
+                                </td>
                                 <td>398</td>
                                 <td></td>
                                 </tr>
@@ -129,7 +152,17 @@
                                 <td>2005-05-29</td>
                                 <td>2005-06-06</td>
                                 <td></td>
-                                <td>In Process</td>
+                                <td>
+                                    <select class="form-control">
+                                        <option selected>In process</option>
+                                        <option value="1">Cancelled</option>
+                                        <option value="2">Disputed</option>
+                                        <option value="3">In process</option>
+                                        <option value="4">On hold</option>
+                                        <option value="5">Resolved</option>
+                                        <option value="6">Shipped</option>
+                                    </select>
+                                </td>
                                 <td>124</td>
                                 <td>Custom shipping instructions were sent to warehouse</td>
                             </tr>

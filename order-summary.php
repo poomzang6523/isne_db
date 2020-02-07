@@ -9,7 +9,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Cart</title>
+    <title>Order summary</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -72,8 +72,8 @@
                     <li><a href="home.php">Home</a></li>
                     <li><a href="product-add.php">Add Product</a></li>
                     <li><a href="product-table.php">Product</a></li>
-                    <li class="active"><a href="cart.php">Cart</a></li>
-                    <li><a href="order.php">Order</a></li>
+                    <li><a href="cart.php">Cart</a></li>
+                    <li class="active"><a href="order.php">Order</a></li>
                 </ul>
             </nav>
             <!-- Button Group -->
@@ -99,7 +99,7 @@
                 <div class="row">
                     <div class="col-12 col-lg-8">
                         <div class="cart-title mt-50">
-                            <h2>Shopping Cart</h2>
+                            <h2>Order summary</h2>
                         </div>
 
                         <div class="cart-table clearfix">
@@ -125,12 +125,7 @@
                                         </td>
                                         <td class="qty">
                                             <div class="qty-btn d-flex">
-                                                <p>Qty</p>
-                                                <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </div>
+                                                <p>x 1</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -146,12 +141,7 @@
                                         </td>
                                         <td class="qty">
                                             <div class="qty-btn d-flex">
-                                                <p>Qty</p>
-                                                <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty2'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty2" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty2'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </div>
+                                                <p>x 2</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -167,12 +157,7 @@
                                         </td>
                                         <td class="qty">
                                             <div class="qty-btn d-flex">
-                                                <p>Qty</p>
-                                                <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty3'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty3" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty3'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </div>
+                                                <p>x 1</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -183,35 +168,30 @@
                     <div class="col-12 col-lg-4">
                         <form action="" method="POST">
                         <div class="cart-summary" id="cart-summary">
-                            <h5>Cart Total</h5>
+                            <h5>Order information</h5>
                             <ul class="summary-table">
-                                <li><span>subtotal:</span> $<span class="priceNum">0.00</span></li>
+                                <li><span>Subtotal:</span><span>USD</span><span class="priceNum">160.0</span></li>
                             </ul>
-                            <div class="product-sorting d-flex">
-                                <div class="sort-by-date d-flex align-items-center mr-15">
-                                        <select name="select" id="sortBydate">
-                                            <option value="value">John Doe</option>
-                                            <option value="value">Mark Otto</option>
-                                        </select>
-                                </div>
+                            <div class="form-group">
+                                <label >Ship to</label>
+                                <input type="text" readonly class="form-control-plaintext" value="John Doe">
                             </div>
                             <br>
                             <div class="form-group">
                                 <label >Require Date</label>
-                                <input type="date" class="form-control">
+                                <input type="text" readonly class="form-control-plaintext" value="20/02/2020">
                             </div>
                             <br>
                             <div class="form-group">
                                 <label >Coupon</label>
-                                <input type="text" class="form-control" placeholder="Coupon Number">
+                                <input type="text" readonly class="form-control-plaintext" value="NULL">
                             </div>
                             <div class="form-group">
                                 <label>Comment</label>
-                                <textarea class="form-control"rows="3"></textarea>
+                                <textarea class="form-control"rows="3" readonly>Gift to my xfriend ;)</textarea>
                               </div>
                             <div class="cart-btn mt-100">
-                                <!-- <a href="cart.php" class="btn amado-btn w-100">Next</a> -->
-                                <button type="button" class="btn amado-btn w-100" >Next</button>
+                                <button type="button" class="btn amado-btn w-100" >Submit</button>
                             </div>
                         </div>
                     </form>
@@ -257,10 +237,10 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="product-table.php">Product</a>
                                         </li>
-                                        <li class="nav-item active">
+                                        <li class="nav-item ">
                                             <a class="nav-link" href="cart.php">Cart</a>
                                         </li>
-                                        <li class="nav-item">
+                                        <li class="nav-item active">
                                             <a class="nav-link" href="order.php">Order</a>
                                         </li>
                                     </ul>
@@ -285,7 +265,7 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
-    <script src="js/main.js"></script>
+    
 
 </body>
 

@@ -9,17 +9,30 @@
 	<title>EMP PASS ADD</title>
 </head>
 <body>
-<form action="" method="POST">
-  <div class="form-group">
-    <label>Emp No.</label>
-    <input type="text" class="form-control" id="empNo" name="empNo">
+<div class="container">
+  <div class="row">
+    <div class="col">
+      
+    </div>
+    <div class="col-6" style="padding-top:20%;">
+        <form action="" method="POST">
+        <div class="form-group">
+          <label>Emp No.</label>
+          <input type="text" class="form-control" id="empNo" name="empNo">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="text" class="form-control" id="pass" name="pass" placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary" id="add">Submit</button>
+      </form>
+    </div>
+    <div class="col">
+      
+    </div>
   </div>
-  <div class="form-group">
-    <label>Password</label>
-    <input type="password" class="form-control" id="pass" name="pass" placeholder="Password">
-  </div>
-  <button type="submit" class="btn btn-primary" id="add">Submit</button>
-</form>
+  
+</div>
 </body>
 </html>
 
@@ -43,7 +56,7 @@
             echo "<script>
 								Swal.fire({
    								text: 'Pass is updated',
-                                icon: 'success'
+                  icon: 'success'
 								}).then(function() {
    				 				window.location = 'emp-addpass.php';
 								});

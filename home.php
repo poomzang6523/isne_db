@@ -73,7 +73,7 @@
                     <li><a href="product-add.php">Add Product</a></li>
                     <li><a href="product-table.php">Product</a></li>
                     <li><a href="cart.php">Cart</a></li>
-                    <li><a href="checkout.html">Order</a></li>
+                    <li><a href="order.php">Order</a></li>
                 </ul>
             </nav>
             <!-- Button Group -->
@@ -109,11 +109,20 @@
                             <!-- Sorting -->
                             <div class="product-sorting d-flex">
                                 <div class="sort-by-date d-flex align-items-center mr-15">
-                                    <p>Sort by</p>
+                                    <p>Filter</p>
                                     <form action="#" method="get">
                                         <select name="select" id="sortBydate">
-                                            <option value="value">Scale</option>
-                                            <option value="value">Vendor</option>
+                                            <option value="value">Lowest</option>
+                                            <option value="value">Highest</option>
+                                        </select>
+                                    </form>
+                                </div>
+                                <div class="sort-by-date d-flex align-items-center mr-15">
+                                    <p>Vendor</p>
+                                    <form action="#" method="get">
+                                        <select name="select" id="sortBydate">
+                                            <option value="value">A-Z</option>
+                                            <option value="value">Z-A</option>
                                         </select>
                                     </form>
                                 </div>

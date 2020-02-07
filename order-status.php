@@ -73,7 +73,7 @@
                     <li><a href="product-add.php">Add Product</a></li>
                     <li><a href="product-table.php">Product</a></li>
                     <li><a href="cart.php">Cart</a></li>
-                    <li class="active"><a href="checkout.html">Order</a></li>
+                    <li class="active"><a href="order.php">Order</a></li>
                 </ul>
             </nav>
             <!-- Button Group -->

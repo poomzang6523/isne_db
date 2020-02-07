@@ -188,6 +188,12 @@
                                 <input type="text" readonly class="form-control-plaintext" value="21000.00">
                             </div>
                         </div>
+                        <div class="form-group row">
+                            <label class="col-sm-4 col-form-label">Point Balanced</label>
+                            <div class="col">
+                                <input type="text" readonly class="form-control-plaintext" value="100">
+                            </div>
+                        </div>
                         <br><br>
                     </form>    
 

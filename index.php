@@ -5,7 +5,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
-	<link rel="icon" type="image/png" href="Login_v19/images/icons/favicon.ico"/>
+	<link rel="icon" href="img/core-img/favicon.ico">
 <!--===============================================================================================-->
 	<link rel="stylesheet" type="text/css" href="Login_v19/vendor/bootstrap/css/bootstrap.min.css">
 <!--===============================================================================================-->
@@ -37,8 +37,8 @@
 						<img src="img/core-img/logo.png" alt="">
 					</span>
 
-					<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
-						<input class="input100" type="text" name="email" placeholder="Email">
+					<div class="wrap-input100 validate-input">
+						<input class="input100" type="text" placeholder="Employee ID">
 						<span class="focus-input100-1"></span>
 						<span class="focus-input100-2"></span>
 					</div>
