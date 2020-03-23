@@ -1,3 +1,17 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid']))
+    {
+        header("Location: index.php");
+    }
+    else 
+    {
+        $empFname = $_SESSION['empFname'];
+        $empLname = $_SESSION['empLname'];
+        $empName = $empFname . ' ' . $empLname ;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +31,7 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -30,7 +45,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +82,51 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.html">Cart</a></li>
-                    <li><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        <li class="active"><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,13 +134,26 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <?php
+            if($empName != "Guest")
+            {
+                $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
+                $query = mysqli_query($connect, $x1);
+                $data = mysqli_fetch_assoc($query);
+
+                echo "<div>$empName</div>";
+                echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
+            }
+            else
+            {
+                echo "<div>$empName</div>";
+            }
+            ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -109,35 +173,27 @@
                         <thead >
                         <tr class="table-primary">
                             <th scope="col">#</th>
-                            <th scope="col">Firstname</th>
-                            <th scope="col">Lastname</th>
+                            <th scope="col">Name</th>
                             <th scope="col">Country</th>
                             <th scope="col">Infomation</th>
                             </tr>
                         </thead>
+                        <?php
+                            $sql = "SELECT `customerNumber`, `customerName`, `country` FROM `customers`";
+                            $query = mysqli_query($connect, $sql);
+                            while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+                        ?>
                         <tbody>
                             <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>Denmark</td>
-                            <td> <a href="#" class="btn btn-outline-success btn-sm"> Info </a> </td>
-                            </tr>
-                            <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>Sweden</td>
-                            <td> <a href="#" class="btn btn-outline-success btn-sm"> Info </a> </td>
-                            </tr>
-                            <tr>
-                            <th scope="row">3</th>
-                            <td>Larry</td>
-                            <td>the Bird</td>
-                            <td>United Arab Emirates</td>
-                            <td> <a href="#" class="btn btn-outline-success btn-sm"> Info </a> </td>
+                            <th scope="row"><?php echo $result["customerNumber"]; ?></th>
+                            <td><?php echo $result["customerName"]; ?></td>
+                            <td><?php echo $result["country"]; ?></td>
+                            <td> <a href="customer_detail.php?id=<?php echo $result["customerNumber"]; ?>" class="btn btn-outline-success btn-sm"> Info </a> </td>
                             </tr>
                         </tbody>
+                        <?php
+                            }
+                        ?>
                         </table>
                         
                     </div>
@@ -164,7 +220,7 @@
                         </div>
                         <!-- Copywrite Text -->
                         <p class="copywrite">
-                            Database 1/62 Term Project | Faculty of Engineering, Chiangmai University
+                            Database 2/62 Term Project | Faculty of Engineering, Chiangmai University
                         </p>
                     </div>
                 </div>
@@ -176,15 +232,19 @@
                             <nav class="navbar navbar-expand-lg justify-content-end">
                                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
                                 <div class="collapse navbar-collapse" id="footerNavContent">
-                                    <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item">
+                                <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item ">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="product-add.php">Shop</a>
+                                            <a class="nav-link" href="product-add.php">Add Product</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="product-table.html">Product</a>
+                                            <a class="nav-link" href="product-table.php">Product</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="cart.php">Cart</a>
@@ -193,6 +253,31 @@
                                             <a class="nav-link" href="order.php">Order</a>
                                         </li>
                                     </ul>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item ">
+                                            <a class="nav-link" href="home.php">Home</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="product-add.php">Add Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="product-table.php">Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="cart.php">Cart</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="order.php">Order</a>
+                                        </li>
+                                    </ul>
+                            ';
+                }
+            ?>
                                 </div>
                             </nav>
                         </div>
@@ -214,6 +299,7 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
+    <script src="js/main.js"></script>
 </body>
 
 </html>

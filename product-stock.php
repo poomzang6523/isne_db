@@ -1,10 +1,11 @@
 <?php
     session_start();
     include('connect.php');
-    if(!isset($_SESSION['empid'])){
-         // header("location: index.php");
-         $empName = "Guest";
-         $_SESSION['empJobtitle'] = 'customer';
+    if(!isset($_SESSION['empid']))
+    {
+        // header("location: index.php");
+        $empName = "Guest";
+        $_SESSION['empJobtitle'] = 'customer';
     }
     else 
     {
@@ -24,7 +25,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Product in store</title>
+    <title>Product stock</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -98,21 +99,6 @@
                     </nav>
                             ';
                 }
-                else if ($_SESSION['empJobtitle'] == "VP Marketing")
-                {
-                    echo '
-                    <nav class="amado-nav">
-                    <ul>
-                        <li ><a href="home.php">Home</a></li>
-                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
-                        <li class="active"><a href="product-table.php">Product</a></li>
-                        <li><a href="cart.php"  class="disabled">Cart</a></li>
-                        <li><a href="order.php" class="disabled">Order</a></li>
-                        <li><a href="discount.php">Discount Generate</a></li>
-                        </ul>
-                    </nav>
-                            ';
-                }
                 else
                 {
                     echo '
@@ -154,70 +140,68 @@
             }
             ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <?php 
-                if(!isset($_SESSION['empid']))
-                {
-                   echo '<button onclick="loginLink();" type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-sign-out"></i> Log in</button>';
-                }
-                else 
-                {
-                    echo '<button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>';
-                }
-                ?>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
 
+        <?php
+        $id = $_GET['id'];
+        $sql = "SELECT * FROM `products` WHERE productCode = '$id'";
+        $query = mysqli_query($connect, $sql);
+        while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+        ?>
         <div class="amado_product_area section-padding-100">
             <div class="container-fluid">
                 <div class="cart-title mt-50">
-                    <h2>Product List</h2>
+                    <h2>Stock of "<?php echo $result['productName']; ?>"</h2>
                     <br>
                 </div>
+                
+        <?php
+            }
+        ?>
                 <div class="row">
                     <div class="col-12">
-                    <table class="table">
-                        <thead >
-                        <tr class="table-info">
-                            <th scope="col">Product C.</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Vendor</th>
-                            <th scope="col-4">Action</th>
+                        <table class="table">
+                        <thead>
+                            <tr class="table-active">
+                            <th scope="col">From branch</th>
+                            <th scope="col">Transfer to</th>
+                            <th scope="col">Amount</th>
                             </tr>
                         </thead>
-                        <?php
-                            $sql = "SELECT `productCode`, `productName`, `productVendor` FROM `products`";
-                            $query = mysqli_query($connect, $sql);
-                            while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
-                        ?>
-                        <tbody>
+                        <tbody id="cartItems">
                             <tr>
-                            <th scope="row"><a class="underline" href="product-details.php?id=<?php echo $result['productCode']; ?>"><?php echo $result['productCode']; ?></a></th>
-                            <td><?php echo $result["productName"]; ?></td>
-                            <td><?php echo $result["productVendor"]; ?></td>
-                            <td width="250">
-                                <?php
-                                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
-                                {
-                                    echo '<a href="product-stock.php?id='.$result["productCode"].'" class="btn btn-outline-warning btn-sm"> Stock </a> 
-                                    <a href="product-update.php?id='.$result["productCode"].'" class="btn btn-outline-success btn-sm"> Update </a>
-                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm disabled" > Remove </a>';
-                                }
-                                else
-                                {
-                                    echo '<a href="product-stock.php?id='.$result["productCode"].'" class="btn btn-outline-warning btn-sm disabled"> Stock </a> 
-                                    <a href="product-update.php?id='.$result["productCode"].'" class="btn btn-outline-success btn-sm disabled"> Update </a>
-                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm disabled"> Remove </a>';
-                                }
-                                ?>
+                            <td><form action="" method="POST">
+                                    <select class="form-control" name="from">
+                                    <?php
+                                        $branches = "SELECT DISTINCT officeCode FROM `branches` WHERE productCode = '$id'";
+                                        $bquery = mysqli_query($connect, $branches);
+                                        while ($pbranches = mysqli_fetch_array($bquery, MYSQLI_ASSOC)) {
+                                    ?>
+                                        <option value="<?php echo $pbranches['officeCode']; ?>">Branch <?php echo $pbranches['officeCode']; ?></option>
+                                    <?php
+                                        }
+                                    ?> 
+                                    </select>                  
                             </td>
+                            <td>
+                                    <select class="form-control" name="to">
+                                        <option value="<?php echo $_SESSION['empOffice'];?>" selected>Branch <?php echo $_SESSION['empOffice'];?></option>
+                                    </select>  
+                                </td>
+                            <td class="qty">
+                            <div class="quantity">
+                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
+                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1">
+                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                    <button type="submit" class="btn btn-outline-primary" name="transfer">Transfer</button>
+                            </div>
+                            </td></form>
                             </tr>
                         </tbody>
-                        <?php
-                            }
-                        ?>
                         </table>
-                        
                     </div>
                 </div>
 
@@ -259,7 +243,7 @@
                 {
                     echo '
                     <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item ">
+                                        <li class="nav-item">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
                                         <li class="nav-item">
@@ -281,7 +265,7 @@
                 {
                     echo '
                     <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item">
+                                        <li class="nav-item ">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
                                         <li class="nav-item">
@@ -325,3 +309,16 @@
 </body>
 
 </html>
+
+<?php
+    // if(isset($_POST['transfer'])) {
+    //     $share_product = "UPDATE `branches` SET qty = qty - " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['from'] . "'";
+    //     $share_product .= "INSERT INTO `branches` (`productCode`, `officeCode`, `qty`) VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
+    //     if(!mysqli_multi_query($connect, $share_product)) {
+    //         echo "<script>alert('Fail to transfer. Please try again')</script>";
+    //     }
+    //     else {
+    //         echo "<script>window.location = 'product-table.php';</script>";
+    //     }
+    // }
+?>

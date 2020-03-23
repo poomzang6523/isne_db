@@ -1,3 +1,19 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid']))
+    {
+        // header("location: index.php");
+        $empName = "Guest";
+        $_SESSION['empJobtitle'] = 'customer';
+    }
+    else 
+    {
+        $empFname = $_SESSION['empFname'];
+        $empLname = $_SESSION['empLname'];
+        $empName = $empFname . ' ' . $empLname ;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +33,8 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 
 </head>
 
@@ -30,7 +48,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +85,52 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li class="active"><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.php">Cart</a></li>
-                    <li><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li class="active"><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li class="active"><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        <li><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li class="active"><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
+           
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,17 +138,39 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            
+            <?php
+            if($empName != "Guest")
+            {
+                $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
+                $query = mysqli_query($connect, $x1);
+                $data = mysqli_fetch_assoc($query);
+
+                echo "<div>$empName</div>";
+                echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
+            }
+            else
+            {
+                echo "<div>$empName</div>";
+            }
+            ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <?php 
+                if(!isset($_SESSION['empid']))
+                {
+                   echo '<button onclick="loginLink();" type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-sign-out"></i> Log in</button>';
+                }
+                else 
+                {
+                    echo '<button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>';
+                }
+                ?>
             </div>
         </header>
         <!-- Header Area End -->
-
 
         <div class="amado_product_area section-padding-100">
             <div class="container-fluid">
@@ -102,30 +179,88 @@
                     <div class="col-12">
                         <div class="product-topbar d-xl-flex align-items-end justify-content-between">
                             <!-- Total Products -->
+                            <?php
+                            if (isset($_GET['vendor']))
+                            {
+                                $count = "SELECT count(*) FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productVendor = '" . $_GET['vendor'] . "'";
+                            }
+                            else if (isset($_GET['scale'])) {
+                                $count = "SELECT count(*) FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productScale = '" . $_GET['scale'] . "'";
+                            }
+                            else if (isset($_GET['search'])) {
+                                $text = $_GET['search'];
+                                $count = "SELECT count(*) FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productName LIKE '%$text%' OR products.productLine LIKE '%$text%' OR products.productVendor LIKE '%$text%' OR products.productDescription LIKE '%$text%' ";
+                            }
+                            else {
+                                $count = "SELECT count(*) FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine ORDER BY products.productCode ASC";
+                            }
+                            $count_query = mysqli_query($connect, $count);
+                            while ($number = mysqli_fetch_array($count_query, MYSQLI_ASSOC)) {
+                            ?>
                             <div class="total-products">
-                                <p>Showing 8 Products</p>
+                                <p>Showing <?php echo $number['count(*)']; ?> Products</p>
                                 
                             </div>
+                            <?php
+                                }
+                                
+                            ?>
                             <!-- Sorting -->
                             <div class="product-sorting d-flex">
                                 <div class="sort-by-date d-flex align-items-center mr-15">
-                                    <p>Filter</p>
-                                    <form action="#" method="get">
-                                        <select name="select" id="sortBydate">
-                                            <option value="value">Lowest</option>
-                                            <option value="value">Highest</option>
-                                        </select>
-                                    </form>
-                                </div>
+                                    <!-- <p> Scale </p> -->
+                                    <!-- <form action="" method="POST">
+                                        <select name="scale"> -->
+                                        <div class="btn-group">
+                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Scale
+                                        </button>
+                                            <div class="dropdown-menu">
+                                        <?php
+                                            $scale = "SELECT DISTINCT productScale FROM `products` ORDER BY productScale";
+                                            $scale_query = mysqli_query($connect, $scale);
+                                            while ($scale_type = mysqli_fetch_array($scale_query, MYSQLI_ASSOC)) {
+                                        ?>
+                                            <!-- <option value="<?php// echo $scale_type['productScale']; ?>"><?php// echo $scale_type['productScale']; ?></option> -->
+                                                <a class="dropdown-item" href="home.php?scale=<?php echo $scale_type['productScale']; ?>"> <?php echo $scale_type['productScale']; ?> </a>
+                                                
+                                        <?php
+                                            }
+                                        ?>
+                                        </div>
+                                    </div>
+                                        <!-- </select>
+                                    </form> -->
+                                    
+                                </div> 
+                                
+                               
                                 <div class="sort-by-date d-flex align-items-center mr-15">
-                                    <p>Vendor</p>
-                                    <form action="#" method="get">
-                                        <select name="select" id="sortBydate">
-                                            <option value="value">A-Z</option>
-                                            <option value="value">Z-A</option>
-                                        </select>
-                                    </form>
+                                    <!-- <p>Vendor</p>
+                                    <form action="" method="POST">
+                                        <select name="vendor"> -->
+                                        <div class="btn-group">
+                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Vendor
+                                        </button>
+                                            <div class="dropdown-menu">
+                                        <?php
+                                            $vendor = "SELECT DISTINCT productVendor FROM `products` ORDER BY productVendor";
+                                            $vendor_query = mysqli_query($connect, $vendor);
+                                            while ($vendor_type = mysqli_fetch_array($vendor_query, MYSQLI_ASSOC)) {
+                                        ?>
+                                            <!-- <option value="<?php //echo $vendor_type['productVendor']; ?>"><?php //echo $vendor_type['productVendor']; ?></option> -->
+                                            <a class="dropdown-item" href="home.php?vendor=<?php echo $vendor_type['productVendor']; ?>"> <?php echo $vendor_type['productVendor']; ?> </a>
+                                        <?php
+                                            }
+                                        ?>
+                                        <!-- </select> -->
+                                        <!-- <input class="btn btn-info" type="submit" name="vendor" value="Vendor"> -->
+                                    <!-- </form> -->
+                                        </div>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -133,14 +268,36 @@
 
                 <div class="row">
 
+                <?php
+                    if (isset($_GET['search'])) 
+                    {
+                        $text = $_GET['search'];
+                        $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productName LIKE '%$text%' OR products.productLine LIKE '%$text%' OR products.productVendor LIKE '%$text%' OR products.productDescription LIKE '%$text%' ";
+                    }
+                    else if (isset($_GET['scale'])) 
+                    {
+                        $text = $_GET['scale'];
+                        $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productScale = '$text'";
+                    }
+                    else if (isset($_GET['vendor'])) 
+                    {
+                        $text = $_GET['vendor'];
+                        $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productVendor = '$text'";
+                    }
+                    else {
+                        $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine ORDER BY products.productCode ASC";
+                    }
+                    $query = mysqli_query($connect, $sql);
+                    while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+                ?>
                     <!-- Single Product Area -->
                     <div class="col-12 col-sm-6 col-md-12 col-xl-6">
                         <div class="single-product-wrapper">
-                            <!-- Product Image -->
+                        
                             <div class="product-img">
-                                <img src="img/product-img/product1.jpg" alt="">
+                                <img src="img/product-img/<?php echo $result['image']; ?>" alt="">
                                 <!-- Hover Thumb -->
-                                <img class="hover-img" src="img/product-img/product2.jpg" alt="">
+                                <img class="hover-img" src="img/product-img/<?php echo $result['image2']; ?>" alt="">
                             </div>
 
                             <!-- Product Description -->
@@ -148,64 +305,24 @@
                                 <!-- Product Meta Data -->
                                 <div class="product-meta-data">
                                     <div class="line"></div>
-                                    <p class="product-price">$180</p>
-                                    <a href="product-details.html">
-                                        <h6>Modern Chair</h6>
-                                    </a>
+                                    <p class="product-price">$<?php echo $result['MSRP']; ?></p>
+                                    <small class="tag"><?php echo $result['productScale']; ?> | <?php echo $result['productVendor']; ?></small>
+                                    <a href="product-details.php?id=<?php echo $result['productCode']; ?>">
+                        <h6><?php echo $result['productName']; ?></h6>
+                        </a>
                                 </div>
                                 <!-- Ratings & Cart -->
                                 <div class="ratings-cart text-right">
-                                    <div class="ratings">
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                    </div>
                                     <div class="cart">
-                                        <a href="cart.html" data-toggle="tooltip" data-placement="left" title="Add to Cart"><img src="img/core-img/cart.png" alt=""></a>
+                                        <a href="product-details.php?id=<?php echo $result['productCode']; ?>" data-toggle="tooltip" data-placement="left" title="See more detail"><img src="img/core-img/cart.png" alt=""></a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Single Product Area -->
-                    <div class="col-12 col-sm-6 col-md-12 col-xl-6">
-                        <div class="single-product-wrapper">
-                            <!-- Product Image -->
-                            <div class="product-img">
-                                <img src="img/product-img/product6.jpg" alt="">
-                                <!-- Hover Thumb -->
-                                <img class="hover-img" src="img/product-img/product1.jpg" alt="">
-                            </div>
-
-                            <!-- Product Description -->
-                            <div class="product-description d-flex align-items-center justify-content-between">
-                                <!-- Product Meta Data -->
-                                <div class="product-meta-data">
-                                    <div class="line"></div>
-                                    <p class="product-price">$180</p>
-                                    <a href="product-details.html">
-                                        <h6>Modern Chair</h6>
-                                    </a>
-                                </div>
-                                <!-- Ratings & Cart -->
-                                <div class="ratings-cart text-right">
-                                    <div class="ratings">
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                        <i class="fa fa-star" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="cart">
-                                        <a href="cart.html" data-toggle="tooltip" data-placement="left" title="Add to Cart"><img src="img/core-img/cart.png" alt=""></a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php
+                        }
+                    ?>
                 </div>
 
             </div>
@@ -227,7 +344,7 @@
                         </div>
                         <!-- Copywrite Text -->
                         <p class="copywrite">
-                            Database 1/62 Term Project | Faculty of Engineering, Chiangmai University
+                            Database 2/62 Term Project | Faculty of Engineering, Chiangmai University
                         </p>
                     </div>
                 </div>
@@ -239,7 +356,11 @@
                             <nav class="navbar navbar-expand-lg justify-content-end">
                                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
                                 <div class="collapse navbar-collapse" id="footerNavContent">
-                                    <ul class="navbar-nav ml-auto">
+                                <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
                                         <li class="nav-item active">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
@@ -253,9 +374,34 @@
                                             <a class="nav-link" href="cart.php">Cart</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" href="checkout.html">Order</a>
+                                            <a class="nav-link" href="order.php">Order</a>
                                         </li>
                                     </ul>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item active">
+                                            <a class="nav-link" href="home.php">Home</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="product-add.php">Add Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="product-table.php">Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="cart.php">Cart</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="order.php">Order</a>
+                                        </li>
+                                    </ul>
+                            ';
+                }
+            ?>
                                 </div>
                             </nav>
                         </div>
@@ -276,6 +422,8 @@
     <script src="js/plugins.js"></script>
     <!-- Active js -->
     <script src="js/active.js"></script>
+
+    <script src="js/main.js"></script>
 
 </body>
 

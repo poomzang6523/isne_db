@@ -1,3 +1,10 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid'])){
+        header("location: index.php");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +24,7 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -30,7 +38,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +75,51 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.php">Cart</a></li>
-                    <li class="active"><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li ><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li class="active"><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li class="active"><a href="order.php">Order</a></li>
+                        <li><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li class="active"><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,13 +127,12 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <div><?php echo " " . $_SESSION['empFname'] . " " . $_SESSION['empLname']; ?></div>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -265,7 +308,7 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
-    
+    <script src="js/main.js"></script>
 
 </body>
 

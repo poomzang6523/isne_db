@@ -48,17 +48,13 @@ a {
   transition: all 500ms ease 0s;
   text-decoration: none;
   outline: 0 solid transparent;
-  color: #131212;
-  font-weight: 400;
-  font-size: 12px; }
+  color: #131212;}
   a:hover, a:focus {
     -webkit-transition: all 500ms ease 0s;
     transition: all 500ms ease 0s;
     text-decoration: none;
     outline: 0 solid transparent;
-    color: #131212;
-    font-weight: 400;
-    font-size: 12px; }
+    color: #131212;}
 
 ul,
 ol {
@@ -317,9 +313,7 @@ img {
   line-height: 56px;
   background-color: #4272d7;
   font-weight: 400; }
-  .emp {
-    background-color: #8DC73F;
-  }
+  
   .amado-btn.active, .amado-btn:hover, .amado-btn:focus {
     font-size: 18px;
     color: #ffffff;
@@ -518,8 +512,9 @@ img {
   .sc-emp a{
     font-size: 15px;
   }
-  .sc-emp a:hover,a:focus{
+  .sc-emp a:focus{
     font-size: 15px;
+    color: red;
   }
   .main-content-wrapper .products-catagories-area {
     -webkit-box-flex: 0;
@@ -1414,22 +1409,6 @@ img {
     width: 100%;
     border-radius: 0;
     background-color: #f5f7fa; }
-  .customeradd a {
-    float: right;
-    font-size: 15px;
-    display: inline-block;
-  }
-  .customeradd a:hover{
-    float: right;
-    font-size: 15px;
-    display: inline-block;
-    color: #4272d7;
-  }
-
-  a.disabled {
-    pointer-events: none;
-    cursor: default;
-  }
 
 /* ##### The End ##### */
 

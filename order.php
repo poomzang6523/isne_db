@@ -1,3 +1,19 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid']))
+    {
+        // header("location: index.php");
+        $empName = "Guest";
+        $_SESSION['empJobtitle'] = 'customer';
+    }
+    else 
+    {
+        $empFname = $_SESSION['empFname'];
+        $empLname = $_SESSION['empLname'];
+        $empName = $empFname . ' ' . $empLname ;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +33,7 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -30,7 +47,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +84,51 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.php">Cart</a></li>
-                    <li class="active"><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li ><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li class="active"><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li class="active"><a href="order.php">Order</a></li>
+                        <li><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li class="active"><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,13 +136,26 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <?php
+            if($empName != "Guest")
+            {
+                $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
+                $query = mysqli_query($connect, $x1);
+                $data = mysqli_fetch_assoc($query);
+
+                echo "<div>$empName</div>";
+                echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
+            }
+            else
+            {
+                echo "<div>$empName</div>";
+            }
+            ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -97,13 +163,14 @@
         <div class="amado_product_area section-padding-100">
             <div class="container-fluid">
                 <div class="cart-title mt-50">
-                    <h2>Order Status: Bott Larry</h2>
+                    <!-- <h2>Order Status: <?php //echo $_SESSION['empFname'] . " "  . $_SESSION['empLname']; ?></h2> -->
+                    <h2>Order Status</h2>
                     <br>
                 </div>
                 <div class="row">
                     <div class="col-12">
                     <table class="table">
-                        <thead >
+                        <thead>
                         <tr class="table-info">
                             <th scope="col">Order No.</th>
                             <th scope="col">Order D.</th>
@@ -111,64 +178,131 @@
                             <th scope="col">Shipped D.</th>
                             <th scope="col">Status</th>
                             <th scope="col">Customer No.</th>
-                            <th scope="col" style="width: 15%;">Comment</th>
-                            </tr>
+                            <th scope="col">Detail</th>
+                        </tr>
                         </thead>
+                        <?php
+                        $sql = "SELECT * FROM `orders` ORDER BY orderNumber DESC";
+                        $query = mysqli_query($connect, $sql);
+                        while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+                        ?>
                         <tbody>
                             <tr>
-                                <th scope="row">10408</th>
-                                <td>2005-04-22</td>
-                                <td>2005-04-29</td>
-                                <td>2005-04-27</td>
+                                <th scope="row"><a class="underline" href="order-status.php?id=<?php echo $result['orderNumber']; ?>"><?php echo $result['orderNumber']; ?></a></th>
+                                <td><?php echo $result['orderDate']; ?></td>
+                                <td><?php echo $result['requiredDate']; ?></td>
+                                <td><?php echo $result['shippedDate']; ?></td>
                                 <td>
-                                    <!-- <select class="form-control">
-                                        <option selected>Shipped</option>
-                                        <option value="1">Cancelled</option>
-                                        <option value="2">Disputed</option>
-                                        <option value="3">In process</option>
-                                        <option value="4">On hold</option>
-                                        <option value="5">Resolved</option>
-                                        <option value="6">Shipped</option>
-                                    </select> -->
-                                    <div class="dropdown">
-                                        <button class="btn btn-warning btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            Shipped
+                                    <?php 
+
+                                    if($result["status"] == "Shipped")
+                                    {
+                                        echo '
+                                        <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            '.$result["status"].'
                                         </button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-                                            <button class="dropdown-item" type="button">Cancelled</button>
-                                            <button class="dropdown-item" type="button">Disputed</button>
-                                            <button class="dropdown-item" type="button">In process</button>
-                                            <button class="dropdown-item" type="button">On hold</button>
-                                            <button class="dropdown-item" type="button">Resolved</button>
-                                            <button class="dropdown-item" type="button">Shipped</button>
-                                        </div>
-                                    </div>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=On Hold">On Hold</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Resolved">Resolved</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Shipped">Shipped</a>
+                                                </div>
+                                        ';
+                                    }
+                                    else if($result["status"] == "In Process")
+                                    {
+                                        echo '
+                                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            '.$result["status"].'
+                                        </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=On Hold">On Hold</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Resolved">Resolved</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Shipped">Shipped</a>
+                                                </div>
+                                        ';
+                                    }
+                                    else if($result["status"] == "Disputed")
+                                    {
+                                        echo '
+                                        <button class="btn btn-danger btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            '.$result["status"].'
+                                        </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=On Hold">On Hold</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Resolved">Resolved</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Shipped">Shipped</a>
+                                                </div>
+                                        ';
+                                    }
+                                    else if($result["status"] == "On Hold")
+                                    {
+                                        echo '
+                                        <button class="btn btn-warning btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            '.$result["status"].'
+                                        </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=On Hold">On Hold</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Resolved">Resolved</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Shipped">Shipped</a>
+                                                </div>
+                                        ';
+                                    }
+                                    else if($result["status"] == "Resolved")
+                                    {
+                                        echo '
+                                        <button class="btn btn-info btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            '.$result["status"].'
+                                        </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=On Hold">On Hold</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Resolved">Resolved</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Shipped">Shipped</a>
+                                                </div>
+                                        ';
+                                    }
+                                    else if($result["status"] == "Cancelled")
+                                    {
+                                        echo '
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            '.$result["status"].'
+                                        </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=On Hold">On Hold</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Resolved">Resolved</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Shipped">Shipped</a>
+                                                </div>
+                                        ';
+                                    }
+
+
+                                    ?>
                                 </td>
-                                <td>398</td>
-                                <td></td>
-                                </tr>
-                            <tr>
-                                <th scope="row">10421</th>
-                                <td>2005-05-29</td>
-                                <td>2005-06-06</td>
-                                <td></td>
-                                <td>
-                                    <select class="form-control">
-                                        <option selected>In process</option>
-                                        <option value="1">Cancelled</option>
-                                        <option value="2">Disputed</option>
-                                        <option value="3">In process</option>
-                                        <option value="4">On hold</option>
-                                        <option value="5">Resolved</option>
-                                        <option value="6">Shipped</option>
-                                    </select>
-                                </td>
-                                <td>124</td>
-                                <td>Custom shipping instructions were sent to warehouse</td>
+                                <td><a class="underline" href="customer_detail.php?id=<?php echo $result['customerNumber']; ?>"><?php echo $result['customerNumber']; ?></a></td>
+                                <td><a href="order-detail.php?id=<?php echo $result["orderNumber"]; ?>" class="btn btn-outline-dark btn-sm"> Details </a> </td>
                             </tr>
                         </tbody>
+                        <?php
+                            }
+                        ?>
                         </table>
-                        
                     </div>
                 </div>
 
@@ -243,6 +377,7 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
+    <script src="js/main.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-# Databse Term Project
+# Database Term Project
 
 A web application about a classic plastic model shop.
 

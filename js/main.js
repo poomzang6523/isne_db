@@ -18,3 +18,31 @@ $(".qty-plus").click(function (){
 
 
 sum();
+
+function logoutLink(){
+    Swal.fire({
+        text: 'Are you sure you want to log out?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, log out!'
+      }).then((result) => {
+        if (result.value) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Successfully logged out!',
+                text: 'Redirect to login page',
+                confirmButtonText: 'OK'
+              }).then((result) => {
+                if (result.value) {
+                    window.location='logout.php';
+                }
+              })
+        }
+      })
+    }
+
+function loginLink(){
+  window.location = 'index.php';
+}

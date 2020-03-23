@@ -1,3 +1,19 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid']))
+    {
+        // header("location: index.php");
+        $empName = "Guest";
+        $_SESSION['empJobtitle'] = 'customer';
+    }
+    else 
+    {
+        $empFname = $_SESSION['empFname'];
+        $empLname = $_SESSION['empLname'];
+        $empName = $empFname . ' ' . $empLname ;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +33,7 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -30,7 +47,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +84,36 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li class="active"><a href="cart.php">Cart</a></li>
-                    <li><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li class="active"><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li class="active"><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,13 +121,26 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <?php
+            if($empName != "Guest")
+            {
+                $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
+                $query = mysqli_query($connect, $x1);
+                $data = mysqli_fetch_assoc($query);
+
+                echo "<div>$empName</div>";
+                echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
+            }
+            else
+            {
+                echo "<div>$empName</div>";
+            }
+            ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -113,69 +164,42 @@
                                     </tr>
                                 </thead>
                                 <tbody id="cartItems">
+                                    <?php
+                                        if(!empty($_SESSION['shopping_cart'])) {
+                                            $total = 0;
+                                            foreach($_SESSION['shopping_cart'] as $keys => $values) {
+                                    ?>
                                     <tr>
                                         <td class="cart_product_img">
-                                            <a href="#"><img src="img/bg-img/cart1.jpg" alt="Product"></a>
+                                            <a href="product-details.php?id=<?php echo $values['id']; ?>"><img src="img/product-img/<?php echo $values['img']; ?>" alt="Product"></a>
                                         </td>
                                         <td class="cart_product_desc">
-                                            <h5>White Modern Chair</h5>
+                                        
+                                            <h5><?php echo $values['name']; ?><br><a class="btn btn-outline-danger btn-sm" href="product-details.php?id=<?php echo $values['id']; ?>&action=delete"> <i class="fa fa-trash" aria-hidden="true"></i> Remove</a> </h5>
                                         </td>
                                         <td class="price">
-                                            $<span class="priceNum">130</span>
+                                            $<span class="priceNum"><?php echo $values['price']; ?></span>
                                         </td>
                                         <td class="qty">
                                             <div class="qty-btn d-flex">
                                                 <p>Qty</p>
                                                 <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
+                                                    <!-- <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span> -->
+                                                    <input type="number" class="qty-text priceNum" id="qty" step="1" min="1" max="300" name="quantity" value="<?php echo $values['quantity']; ?>" readonly>
+                                                    <!-- <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span> -->
                                                 </div>
                                             </div>
+                                            <!-- <span class="priceNum"><?php //echo $values['quantity']; ?></span> -->
                                         </td>
+                                        <!-- <td>
+                                               <a href="product-details.php?id=<?php //echo $values['id']; ?>&action=delete">Remove</a>
+                                        </td> -->
                                     </tr>
-                                    <tr>
-                                        <td class="cart_product_img">
-                                            <a href="#"><img src="img/bg-img/cart2.jpg" alt="Product"></a>
-                                        </td>
-                                        <td class="cart_product_desc">
-                                            <h5>Minimal Plant Pot</h5>
-                                        </td>
-                                        <td class="price">
-                                            $<span class="priceNum">10</span>
-                                        </td>
-                                        <td class="qty">
-                                            <div class="qty-btn d-flex">
-                                                <p>Qty</p>
-                                                <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty2'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty2" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty2'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="cart_product_img">
-                                            <a href="#"><img src="img/bg-img/cart3.jpg" alt="Product"></a>
-                                        </td>
-                                        <td class="cart_product_desc">
-                                            <h5>Minimal Plant Pot</h5>
-                                        </td>
-                                        <td class="price">
-                                            $<span class="priceNum">10</span>
-                                        </td>
-                                        <td class="qty">
-                                            <div class="qty-btn d-flex">
-                                                <p>Qty</p>
-                                                <div class="quantity">
-                                                    <span class="qty-minus" onclick="var effect = document.getElementById('qty3'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                                    <input type="number" class="qty-text" id="qty3" step="1" min="1" max="300" name="quantity" value="1">
-                                                    <span class="qty-plus" onclick="var effect = document.getElementById('qty3'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    <?php
+                                                $total = $total + ($values['quantity'] * $values['price']);
+                                            }
+                                        }
+                                    ?>
                                 </tbody>
                             </table>
                         </div>
@@ -185,14 +209,21 @@
                         <div class="cart-summary" id="cart-summary">
                             <h5>Cart Total</h5>
                             <ul class="summary-table">
-                                <li><span>subtotal:</span> $<span class="priceNum">0.00</span></li>
+                                <li><span>subtotal:</span> $<span class="priceNum"><?php echo $total; ?></span></li>
                             </ul>
                             <div class="product-sorting d-flex">
                                 <div class="sort-by-date d-flex align-items-center mr-15">
-                                        <select name="select" id="sortBydate">
-                                            <option value="value">John Doe</option>
-                                            <option value="value">Mark Otto</option>
-                                        </select>
+                                <select class="custom-select mr-sm" id="customerName">
+                                <?php
+                                $sql = "SELECT * FROM `customers` WHERE salesRepEmployeeNumber = '".$_SESSION['empid']."' OR salesRepEmployeeNumber IS NULL ORDER BY customerName ASC";
+                                $query = mysqli_query($connect, $sql);
+                                while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+                                ?>
+                                    <option value="<?php echo $result["customerNumber"]; ?>"><?php echo $result["customerName"]; ?></option>  
+                                <?php 
+                                }
+                                ?>
+                                </select>
                                 </div>
                             </div>
                             <br>
@@ -211,7 +242,7 @@
                               </div>
                             <div class="cart-btn mt-100">
                                 <!-- <a href="cart.php" class="btn amado-btn w-100">Next</a> -->
-                                <button type="button" class="btn amado-btn w-100" >Next</button>
+                                <button type="button" class="btn amado-btn w-100" >Place your order</button>
                             </div>
                         </div>
                     </form>
@@ -235,7 +266,7 @@
                         </div>
                         <!-- Copywrite Text -->
                         <p class="copywrite">
-                            Database 1/62 Term Project | Faculty of Engineering, Chiangmai University
+                            Database 2/62 Term Project | Faculty of Engineering, Chiangmai University
                         </p>
                     </div>
                 </div>
@@ -247,7 +278,11 @@
                             <nav class="navbar navbar-expand-lg justify-content-end">
                                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
                                 <div class="collapse navbar-collapse" id="footerNavContent">
-                                    <ul class="navbar-nav ml-auto">
+                                <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
                                         <li class="nav-item ">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
@@ -264,6 +299,46 @@
                                             <a class="nav-link" href="order.php">Order</a>
                                         </li>
                                     </ul>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        <li class="active"><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item ">
+                                            <a class="nav-link" href="home.php">Home</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="product-add.php">Add Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="product-table.php">Product</a>
+                                        </li>
+                                        <li class="nav-item active">
+                                            <a class="nav-link disabled" href="cart.php">Cart</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="order.php">Order</a>
+                                        </li>
+                                    </ul>
+                            ';
+                }
+            ?>
                                 </div>
                             </nav>
                         </div>

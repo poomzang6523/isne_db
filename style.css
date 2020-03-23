@@ -11,3 +11,46 @@
     /* ---------------------------------------
     ##### - PLACE YOUR CUSTOM CSS HERE - #####
     --------------------------------------- */
+    .emp {
+        background-color: #8DC73F;
+      }
+      .save {
+        background-color: #2c3e50;
+        float: right;
+      }
+      
+  .customeradd a {
+    float: right;
+    font-size: 15px;
+    display: inline-block;
+  }
+  .customeradd a:hover{
+    float: right;
+    font-size: 15px;
+    display: inline-block;
+    color: #4272d7;
+  }
+
+  a.disabled {
+    pointer-events: none;
+    cursor: default;
+    color: #6b6b6b;
+  }
+
+  .tag {
+    color: #6b6b6b;
+  }
+
+  a.underline {
+    text-decoration: underline;
+    font-size: 16px;
+  }
+
+  a.underline:hover{
+    color: #4272d7;
+  }
+
+  #subPrefix {
+    font-size: 13px;
+    color: #616161;
+  }

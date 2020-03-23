@@ -6,7 +6,7 @@
 	<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
 	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-	<title>EMP PASS ADD</title>
+	<title>DISCOUNT ADD</title>
 </head>
 <body>
 <div class="container">
@@ -17,14 +17,14 @@
     <div class="col-6" style="padding-top:20%;">
         <form action="" method="POST">
         <div class="form-group">
-          <label>Emp No.</label>
-          <input type="text" class="form-control" id="empNo" name="empNo">
+          <label>Discount ID</label>
+          <input type="text" class="form-control" id="codeNo" name="codeNo">
         </div>
         <div class="form-group">
-          <label>Password</label>
-          <input type="text" class="form-control" id="pass" name="pass" placeholder="Password">
+          <label>Exp. Date</label>
+          <input type="date" class="form-control" id="date" name="date">
         </div>
-        <button type="submit" class="btn btn-primary" id="add">Submit</button>
+        <button type="submit" class="btn btn-success" id="add">Submit</button>
       </form>
     </div>
     <div class="col">
@@ -44,21 +44,20 @@
     
     $con = mysqli_connect("localhost","root","","db_261342");
     session_start();
-    if (isset($_POST['empNo'], $_POST['pass']))
+    if (isset($_POST['codeNo'], $_POST['date']))
     {
-        $empNo = htmlentities(mysqli_real_escape_string($con, $_POST['empNo']));
-        $pass = htmlentities(mysqli_real_escape_string($con, $_POST['pass']));
+        $codeNo = htmlentities(mysqli_real_escape_string($con, $_POST['codeNo']));
+        $date = htmlentities(mysqli_real_escape_string($con, $_POST['date']));
         
-        $pass = password_hash($pass, PASSWORD_DEFAULT);
-        $update = "UPDATE `employees` SET empPass='$pass' WHERE employeeNumber='$empNo'";
+        $update = "INSERT INTO `promotions` (`code`, `expireDate`, `count`) VALUES ('$codeNo', '$date', '0')";
         $run_update = mysqli_query($con,$update);
         if($run_update) {
             echo "<script>
 								Swal.fire({
-   								text: 'Pass is updated',
+   								text: 'Added discount successful',
                   icon: 'success'
 								}).then(function() {
-   				 				window.location = 'emp-addpass.php';
+   				 				window.location = 'discount-addcode.php';
 								});
 				</script>";
         }

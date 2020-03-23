@@ -1,10 +1,11 @@
 <?php
     session_start();
     include('connect.php');
-    if(!isset($_SESSION['empid'])){
-         // header("location: index.php");
-         $empName = "Guest";
-         $_SESSION['empJobtitle'] = 'customer';
+    if(!isset($_SESSION['empid']))
+    {
+        // header("location: index.php");
+        $empName = "Guest";
+        $_SESSION['empJobtitle'] = 'customer';
     }
     else 
     {
@@ -24,7 +25,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Product in store</title>
+    <title>Discount Generater</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -33,6 +34,7 @@
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://cdn.rawgit.com/PascaleBeier/bootstrap-validate/v2.2.0/dist/bootstrap-validate.js"></script>
 
 </head>
 
@@ -89,9 +91,9 @@
                     echo '
                     <nav class="amado-nav">
                     <ul>
-                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="home.php">Home</a></li>
                         <li><a href="product-add.php">Add Product</a></li>
-                        <li class="active"><a href="product-table.php">Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
                         <li><a href="cart.php">Cart</a></li>
                         <li><a href="order.php">Order</a></li>
                         </ul>
@@ -103,12 +105,12 @@
                     echo '
                     <nav class="amado-nav">
                     <ul>
-                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="home.php">Home</a></li>
                         <li><a href="product-add.php" class="disabled" >Add Product</a></li>
-                        <li class="active"><a href="product-table.php">Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
                         <li><a href="cart.php"  class="disabled">Cart</a></li>
                         <li><a href="order.php" class="disabled">Order</a></li>
-                        <li><a href="discount.php">Discount Generate</a></li>
+                        <li class="active"><a href="discount.php">Discount Generate</a></li>
                         </ul>
                     </nav>
                             ';
@@ -120,7 +122,7 @@
                     <ul>
                         <li><a href="home.php">Home</a></li>
                         <li><a href="product-add.php" class="disabled" >Add Product</a></li>
-                        <li class="active"><a href="product-table.php">Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
                         <li><a href="cart.php"  class="disabled">Cart</a></li>
                         <li><a href="order.php" class="disabled">Order</a></li>
                         </ul>
@@ -154,16 +156,7 @@
             }
             ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <?php 
-                if(!isset($_SESSION['empid']))
-                {
-                   echo '<button onclick="loginLink();" type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-sign-out"></i> Log in</button>';
-                }
-                else 
-                {
-                    echo '<button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>';
-                }
-                ?>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -171,60 +164,31 @@
         <div class="amado_product_area section-padding-100">
             <div class="container-fluid">
                 <div class="cart-title mt-50">
-                    <h2>Product List</h2>
+                    <h2>Discount Generater</h2>
                     <br>
                 </div>
                 <div class="row">
-                    <div class="col-12">
-                    <table class="table">
-                        <thead >
-                        <tr class="table-info">
-                            <th scope="col">Product C.</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Vendor</th>
-                            <th scope="col-4">Action</th>
-                            </tr>
-                        </thead>
-                        <?php
-                            $sql = "SELECT `productCode`, `productName`, `productVendor` FROM `products`";
-                            $query = mysqli_query($connect, $sql);
-                            while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
-                        ?>
-                        <tbody>
-                            <tr>
-                            <th scope="row"><a class="underline" href="product-details.php?id=<?php echo $result['productCode']; ?>"><?php echo $result['productCode']; ?></a></th>
-                            <td><?php echo $result["productName"]; ?></td>
-                            <td><?php echo $result["productVendor"]; ?></td>
-                            <td width="250">
-                                <?php
-                                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
-                                {
-                                    echo '<a href="product-stock.php?id='.$result["productCode"].'" class="btn btn-outline-warning btn-sm"> Stock </a> 
-                                    <a href="product-update.php?id='.$result["productCode"].'" class="btn btn-outline-success btn-sm"> Update </a>
-                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm disabled" > Remove </a>';
-                                }
-                                else
-                                {
-                                    echo '<a href="product-stock.php?id='.$result["productCode"].'" class="btn btn-outline-warning btn-sm disabled"> Stock </a> 
-                                    <a href="product-update.php?id='.$result["productCode"].'" class="btn btn-outline-success btn-sm disabled"> Update </a>
-                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm disabled"> Remove </a>';
-                                }
-                                ?>
-                            </td>
-                            </tr>
-                        </tbody>
-                        <?php
-                            }
-                        ?>
-                        </table>
-                        
-                    </div>
-                </div>
-
-
+    <div class="col">
+        <form action="" method="POST">
+        <div class="form-group">
+          <label>Discount ID</label>
+          <input type="text" class="form-control" id="codeNo" name="codeNo">
+        </div>
+        <div class="form-group">
+          <label>Exp. Date</label>
+          <input type="date" class="form-control" id="date" name="date">
+        </div>
+        <button type="submit" class="btn btn-success" id="add">Add to database</button>
+      </form>
+    </div>
+  </div>
             </div>
         </div>
         </div>
+<script>
+bootstrapValidate('#codeNo', 'max:10:Please dont enter more than 10 characters!');
+bootstrapValidate('#codeNo', 'alphanum:Please only enter alphanumeric characters!')
+</script>
     <!-- ##### Main Content Wrapper End ##### -->
 
 
@@ -265,7 +229,7 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="product-add.php">Add Product</a>
                                         </li>
-                                        <li class="nav-item active">
+                                        <li class="nav-item">
                                             <a class="nav-link" href="product-table.php">Product</a>
                                         </li>
                                         <li class="nav-item">
@@ -281,13 +245,13 @@
                 {
                     echo '
                     <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item">
+                                        <li class="nav-item ">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link disabled" href="product-add.php">Add Product</a>
                                         </li>
-                                        <li class="nav-item active">
+                                        <li class="nav-item">
                                             <a class="nav-link" href="product-table.php">Product</a>
                                         </li>
                                         <li class="nav-item">
@@ -325,3 +289,37 @@
 </body>
 
 </html>
+
+<?php
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST')
+    {
+        if (isset($_POST['codeNo'], $_POST['date']))
+        {
+            $codeNo = htmlentities(mysqli_real_escape_string($connect, $_POST['codeNo']));
+            $date = htmlentities(mysqli_real_escape_string($connect, $_POST['date']));
+            
+            $sql = "INSERT INTO `promotions` (`code`, `expireDate`, `count`) VALUES ('$codeNo', '$date', '0')";
+            $run_update = mysqli_query($connect,$sql);
+            if($run_update) {
+                echo "<script>
+                                    Swal.fire({
+                                       text: 'Added discount successful',
+                      icon: 'success'
+                                    }).then(function() {
+                                        window.location = 'discount.php';
+                                    });
+                    </script>";
+            }
+            else 
+            {
+                echo $codeNo.''.$date;
+            }
+        }
+        else 
+            {
+                echo "<script>alert('fail to pass value')</script>";
+            }
+    }
+
+?> 

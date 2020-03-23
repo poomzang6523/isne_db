@@ -1,3 +1,10 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid'])){
+        header("location: index.php");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +24,7 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -30,7 +38,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +75,51 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.php">Cart</a></li>
-                    <li><a href="order.php">Checkout</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        <li><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,13 +127,13 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
+            
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <div><?php echo " " . $_SESSION['empFname'] . " " . $_SESSION['empLname']; ?></div>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -103,56 +147,61 @@
                 <div class="row">
                     <div class="col-12">
                         
-                    <form>
+                    <form action="" method="POST">
                     <div class="form-row">
                             <div class="form-group col-md-3">
                             <label>Customer No.</label>
-                            <input type="text" class="form-control" placeholder="Customer Number">
+                            <input type="text" class="form-control" placeholder="Customer Number" name="cNumber" required>
                             </div>
                             <div class="form-group col">
-                            <label>Customer Name.</label>
-                            <input type="text" class="form-control" placeholder="Customer Name">
+                            <label>Customer Name</label>
+                            <input type="text" class="form-control" name="cName" placeholder="Customer Name" required>
                             </div>
                         </div>
                     <div class="form-row">
                         <div class="form-group col-md-6">
                             <label >Firstname</label>
-                            <input type="text" class="form-control" placeholder="Firstname">
+                            <input type="text" class="form-control" name="cFirstname" placeholder="Firstname" required>
                         </div>
                         <div class="form-group col-md-6">
                             <label >Lastname</label>
-                            <input type="text" class="form-control" placeholder="Lastname">
+                            <input type="text" class="form-control" name="cLastname" placeholder="Lastname" required>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col">
                             <label >Phone</label>
-                            <input type="text" class="form-control" placeholder="Phone Number">
+                            <input type="text" class="form-control" name="cPhone" placeholder="Phone Number" required>
                         </div>
                     </div>
                     <div class="form-group">
                         <label>Address</label>
-                        <input type="text" class="form-control"placeholder="1234 Main St">
+                        <input type="text" class="form-control" name="cAddr1" placeholder="1234 Main St" required>
                     </div>
                     <div class="form-group">
                         <label>Address 2</label>
-                        <input type="text" class="form-control" placeholder="Apartment, studio, or floor">
+                        <input type="text" class="form-control" name="cAddr2" placeholder="Apartment, studio, or floor">
                     </div>
                     <div class="form-row">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-4">
                             <label>City</label>
-                            <input type="text" class="form-control" >
+                            <input type="text" class="form-control" name="cCity" required>
                         </div>
                         <div class="form-group col-md-4">
                             <label>State</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" name="cState">
                         </div>
                         <div class="form-group col-md-2">
                             <label>Postal Code</label>
-                            <input type="text" class="form-control">
+                            <input type="text" class="form-control" name="cPostal">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <label>Country</label>
+                            <input type="text" class="form-control" name="cCountry" required>
                         </div>
                     </div>
-                        <button type="submit" name="addtocart" class="btn amado-btn">Save</button>
+                    <br>
+                        <button type="submit" name="add" class="btn btn-success btn-lg btn-block"><i class="fa fa-plus"></i> Add</button>
                     </form>
                         
                     </div>
@@ -177,7 +226,7 @@
                         </div>
                         <!-- Copywrite Text -->
                         <p class="copywrite">
-                            Database 1/62 Term Project | Faculty of Engineering, Chiangmai University
+                            Database 2/62 Term Project | Faculty of Engineering, Chiangmai University
                         </p>
                     </div>
                 </div>
@@ -189,8 +238,12 @@
                             <nav class="navbar navbar-expand-lg justify-content-end">
                                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
                                 <div class="collapse navbar-collapse" id="footerNavContent">
-                                    <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item active">
+                                <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item ">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
                                         <li class="nav-item">
@@ -206,6 +259,31 @@
                                             <a class="nav-link" href="order.php">Order</a>
                                         </li>
                                     </ul>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item ">
+                                            <a class="nav-link" href="home.php">Home</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="product-add.php">Add Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="product-table.php">Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="cart.php">Cart</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="order.php">Order</a>
+                                        </li>
+                                    </ul>
+                            ';
+                }
+            ?>
                                 </div>
                             </nav>
                         </div>
@@ -227,6 +305,23 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
+    <script src="js/main.js"></script>
+
 </body>
 
 </html>
+<?php
+    if(isset($_POST['add'])) {
+        $addcus = "INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit) VALUES ('" . $_POST['cNumber'] . "', '" . $_POST['cName'] . "', '" . $_POST['cLastname'] . "', '" . $_POST['cFirstname'] . "', '" . $_POST['cPhone'] . "', '" . $_POST['cAddr1'] . "', '" . $_POST['cAddr2'] . "', '" . $_POST['cCity'] . "', '" . $_POST['cState'] . "', '" . $_POST['cPostal'] . "', '" . $_POST['cCountry'] . "', '" . $_SESSION['empid'] . "', '1000')";
+        // $addcus = "INSERT INTO `customers` (`customerNumber`, `customerName`, `contactLastName`, `contactFirstName`, `phone`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `country`, `salesRepEmployeeNumber`, `creditLimit`) VALUES ('$_POST["cNumber"]', '$_POST["cName"]', '$_POST["cLastname"]', '$_POST["cFirstname"]', '$_POST["cPhone"]', '$_POST["cAddr1"]', '$_POST["cAddr2"]', '$_POST["cCity"]', '$_POST["cState"]', '$_POST["cPostal"]', '$_POST["cCountry"]', $_SESSION['empid'], '10000')";
+        if(!mysqli_query($connect, $addcus)) {
+           echo "<script>alert('eiei')</script>";
+        }
+        else {
+            echo "<script>
+                window.location='customer.php';
+            </script>";
+
+        }
+    }
+?>

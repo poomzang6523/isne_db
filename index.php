@@ -1,3 +1,12 @@
+<?php
+if(!isset($_SESSION))
+{
+session_start();
+}
+	if(isset($_SESSION['empid'])){
+        header('location:home.php');
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,36 +35,51 @@
 	<link rel="stylesheet" type="text/css" href="Login_v19/css/util.css">
 	<link rel="stylesheet" type="text/css" href="Login_v19/css/main.css">
 <!--===============================================================================================-->
+
+	<!-- CSS For Javascript -->
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+
 </head>
 <body>
 	
 	<div class="limiter">
 		<div class="container-login100">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-50">
-				<form class="login100-form validate-form">
+				<form class="login100-form validate-form" action="" method="POST">
 					<span class="login100-form-title p-b-33">
 						<img src="img/core-img/logo.png" alt="">
 					</span>
 
 					<div class="wrap-input100 validate-input">
-						<input class="input100" type="text" placeholder="Employee ID">
+						<input class="input100" type="text" name="empid" placeholder="Employee ID">
 						<span class="focus-input100-1"></span>
 						<span class="focus-input100-2"></span>
 					</div>
 
 					<div class="wrap-input100 rs1 validate-input" data-validate="Password is required">
-						<input class="input100" type="password" name="pass" placeholder="Password">
+						<input class="input100" type="password" name="password" placeholder="Password">
 						<span class="focus-input100-1"></span>
 						<span class="focus-input100-2"></span>
 					</div>
 
 					<div class="container-login100-form-btn m-t-20">
-						<button class="login100-form-btn">
-							Sign in
+						<button class="login100-form-btn" name="login">
+							Log in
 						</button>
+						<?php include('login_function.php'); ?>
 					</div>
 
-				
+					<div class="text-center p-t-45 p-b-4">
+						<span class="txt1">
+							Continue
+						</span>
+
+						<a href="home.php" class="txt2 hov1">
+							without Login
+						</a>
+					</div>
+					
+
 				</form>
 			</div>
 		</div>

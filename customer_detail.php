@@ -1,3 +1,19 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid']))
+    {
+        // header("location: index.php");
+        $empName = "Guest";
+        $_SESSION['empJobtitle'] = 'customer';
+    }
+    else 
+    {
+        $empFname = $_SESSION['empFname'];
+        $empLname = $_SESSION['empLname'];
+        $empName = $empFname . ' ' . $empLname ;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,10 +33,17 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
 <body>
+    <?php
+        $id = $_GET['id'];
+        $sql = "SELECT * FROM `customers` WHERE customerNumber = $id";
+        $query = mysqli_query($connect, $sql);
+        while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+    ?>
     <!-- Search Wrapper Area Start -->
     <div class="search-wrapper section-padding-100">
         <div class="search-close">
@@ -30,7 +53,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +90,36 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.php">Cart</a></li>
-                    <li class="active"><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,13 +127,26 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <?php
+            if($empName != "Guest")
+            {
+                $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
+                $query = mysqli_query($connect, $x1);
+                $data = mysqli_fetch_assoc($query);
+
+                echo "<div>$empName</div>";
+                echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
+            }
+            else
+            {
+                echo "<div>$empName</div>";
+            }
+            ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -97,7 +154,7 @@
         <div class="amado_product_area section-padding-100">
             <div class="container-fluid">
                 <div class="cart-title mt-50">
-                    <h2>Atelier graphique</h2>
+                    <h2><?php echo $result["customerName"]; ?></h2>
                     <br>
                 </div>
                 <div class="row">
@@ -107,91 +164,85 @@
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Customer Number</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="103">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["customerNumber"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Customer Name</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="Atelier graphique">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["customerName"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Contact Firstname</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="Carine">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["contactFirstName"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Contact Lastname</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="Schmitt">
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label class="col-sm-4 col-form-label">Status</label>
-                            <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="In Process">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["contactLastName"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Phone No.</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="40.32.2555">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["phone"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">AddressLine1</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="54, rue Royale">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["addressLine1"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">AddressLine2</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["addressLine2"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">City</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="Nantes">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["city"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">State</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["state"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">PostalCode</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="44000">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["postalCode"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Country</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="France">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["country"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Sales Rep Employee Number</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="1370">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["salesRepEmployeeNumber"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Credit Limit</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="21000.00">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["creditLimit"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-4 col-form-label">Point Balanced</label>
                             <div class="col">
-                                <input type="text" readonly class="form-control-plaintext" value="100">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["point"]; ?>"><!-- 100 -->
                             </div>
                         </div>
                         <br><br>
@@ -204,6 +255,9 @@
             </div>
         </div>
         </div>
+        <?php
+            }
+        ?>
     <!-- ##### Main Content Wrapper End ##### -->
 
 
@@ -233,8 +287,12 @@
                             <nav class="navbar navbar-expand-lg justify-content-end">
                                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNavContent" aria-controls="footerNavContent" aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
                                 <div class="collapse navbar-collapse" id="footerNavContent">
-                                    <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item">
+                                <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item ">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
                                         <li class="nav-item">
@@ -250,6 +308,46 @@
                                             <a class="nav-link" href="order.php">Order</a>
                                         </li>
                                     </ul>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        <li class="active"><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <ul class="navbar-nav ml-auto">
+                                        <li class="nav-item ">
+                                            <a class="nav-link" href="home.php">Home</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="product-add.php">Add Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="product-table.php">Product</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="cart.php">Cart</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a class="nav-link disabled" href="order.php">Order</a>
+                                        </li>
+                                    </ul>
+                            ';
+                }
+            ?>
                                 </div>
                             </nav>
                         </div>
@@ -271,6 +369,7 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
+    <script src="js/main.js"></script>
 </body>
 
 </html>

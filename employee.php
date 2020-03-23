@@ -1,3 +1,17 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid']))
+    {
+        header("Location: index.php");
+    }
+    else 
+    {
+        $empFname = $_SESSION['empFname'];
+        $empLname = $_SESSION['empLname'];
+        $empName = $empFname . ' ' . $empLname ;
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,6 +31,8 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 </head>
 
@@ -30,7 +46,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +83,51 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.php">Cart</a></li>
-                    <li><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        <li><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,13 +135,26 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="order.php" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <?php
+            if($empName != "Guest")
+            {
+                $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
+                $query = mysqli_query($connect, $x1);
+                $data = mysqli_fetch_assoc($query);
+
+                echo "<div>$empName</div>";
+                echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
+            }
+            else
+            {
+                echo "<div>$empName</div>";
+            }
+            ?>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
@@ -111,49 +176,124 @@
                             <th scope="col">Job Title</th>
                             </tr>
                         </thead>
+                        <?php
+                            $sql = "SELECT `employeeNumber`, `firstName`, `lastName`, `jobTitle` FROM `employees`";
+                            $query = mysqli_query($connect, $sql);
+                            while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+                        ?>
                         <tbody>
                             <tr>
-                            <th scope="row">1056</th>
-                            <td>Patterson</td>
-                            <td>Mary</td>
-                            <td>
-                                <select class="form-control">
-                                    <option selected>VP Sales</option>
-                                    <option value="1">Sales Manager (NA)</option>
-                                    <option value="2">Sales Manager (APAC)</option>
-                                    <option value="3">Sales Rep</option>
-                                </select>
-                            </td>
-                            </tr>
-                            <tr>
-                            <th scope="row">1143</th>
-                            <td>Bow</td>
-                            <td>Anthony</td>
-                            <td>
-                            <select class="form-control">
-                                    <option selected>Sales Manager (APAC)</option>
-                                    <option value="1">Sales Manager (NA)</option>
-                                    <option value="2">VP Sales</option>
-                                    <option value="3">Sales Rep</option>
-                                </select>
-                            </td>
-                            </tr>
-                            <tr>
-                            <th scope="row">1501</th>
-                            <td>Bott</td>
-                            <td>Larry</td>
-                            <td>
-                            <select class="form-control">
-                                    <option selected>Sales Rep</option>
-                                    <option value="1">Sales Manager (NA)</option>
-                                    <option value="2">Sales Manager (APAC)</option>
-                                    <option value="3">VP Sales</option>
-                                </select>
-                            </td>
+                            <th scope="row"><?php echo $result["employeeNumber"]; ?></th>
+                            <td><?php echo $result["firstName"]; ?></td>
+                            <td><?php echo $result["lastName"]; ?></td>
+                            <?php
+                                if ($_SESSION['empJobtitle'] == "VP Sales") {
+                                    if ($result["jobTitle"] == "Sales Manager (APAC)") {
+                            ?>
+                                        <td>
+                                            <!-- <select class="form-control" id="job">
+                                                <option value="<?php //echo $result["jobTitle"]; ?>" selected><?php //echo $result["jobTitle"]; ?></option>
+                                                <option value="Sale Manager (EMEA)">Sale Manager (EMEA)</option>
+                                                <option value="Sales Manager (NA)">Sales Manager (NA)</option>
+                                                <option value="Sales Rep">Sales Rep</option>
+                                            </select> -->
+                                            <div class="dropdown show">
+                                                
+                                                <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <?php echo $result["jobTitle"]; ?>
+                                                </button>
+
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=VP Sales&to=Sale Manager (EMEA)">Sale Manager (EMEA)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=VP Sales&to=Sales Manager (NA)">Sales Manager (NA)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=VP Sales&to=Sales Rep">Sales Rep</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                            <?php
+                                    }
+                                    else if ($result["jobTitle"] == "Sale Manager (EMEA)") {
+                            ?>
+                                        <td>
+                                            <!-- <select class="form-control">
+                                                <option value="<?php //echo $result["jobTitle"]; ?>" selected><?php //echo $result["jobTitle"]; ?></option>
+                                                <option value="Sales Manager (APAC)">Sale Manager (APAC)</option>
+                                                <option value="Sales Manager (NA)">Sales Manager (NA)</option>
+                                                <option value="Sales Rep">Sales Rep</option>
+                                            </select> -->
+                                            <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <?php echo $result["jobTitle"]; ?>
+                                                </button>
+
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (APAC)">Sale Manager (EMEA)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (NA)">Sales Manager (NA)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Rep">Sales Rep</a>
+                                                </div>
+                                        </td>
+                            <?php
+                                    }
+                                    else if ($result["jobTitle"] == "Sales Manager (NA)") {
+                            ?>
+                                        <td>
+                                            <!-- <select class="form-control">
+                                                <option value="<?php //echo $result["jobTitle"]; ?>" selected><?php //echo $result["jobTitle"]; ?></option>
+                                                <option value="Sales Manager (APAC)">Sales Manager (APAC)</option>
+                                                <option value="Sale Manager (EMEA)">Sale Manager (EMEA)</option>
+                                                <option value="Sales Rep">Sales Rep</option>
+                                            </select> -->
+                                            <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <?php echo $result["jobTitle"]; ?>
+                                                </button>
+
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (APAC)">Sales Manager (APAC)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sale Manager (EMEA)">Sale Manager (EMEA)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Rep">Sales Rep</a>
+                                                </div>
+                                        </td>
+                            <?php
+                                    }
+                                    else if ($result["jobTitle"] == "Sales Rep") {
+                            ?>
+                                        <td>
+                                            <!-- <select class="form-control">
+                                                <option value="<?php //echo $result["jobTitle"]; ?>" selected><?php// echo $result["jobTitle"]; ?></option>
+                                                <option value="Sales Manager (APAC)">Sales Manager (APAC)</option>
+                                                <option value="Sale Manager (EMEA)">Sale Manager (EMEA)</option>
+                                                <option value="Sales Manager (NA)">Sales Manager (NA)</option>
+                                            </select> -->
+
+                                            <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                    <?php echo $result["jobTitle"]; ?>
+                                                </button>
+
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (APAC)">Sales Manager (APAC)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sale Manager (EMEA)">Sale Manager (EMEA)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (NA)">Sales Manager (NA)</a>
+                                                </div>
+                                        </td>
+                            <?php
+                                    }
+                                    else {
+                            ?>
+                                        <td><?php echo $result["jobTitle"]; ?></td>
+                            <?php
+                                    }
+                                }
+                                else {
+                            ?>
+                                    <td><?php echo $result["jobTitle"]; ?></td>
+                            <?php
+                                    }
+                            ?>
                             </tr>
                         </tbody>
+                        <?php
+                            }
+                        ?>
                         </table>
-                        
                     </div>
                 </div>
 
@@ -178,7 +318,7 @@
                         </div>
                         <!-- Copywrite Text -->
                         <p class="copywrite">
-                            Database 1/62 Term Project | Faculty of Engineering, Chiangmai University
+                            Database 2/62 Term Project | Faculty of Engineering, Chiangmai University
                         </p>
                     </div>
                 </div>
@@ -228,6 +368,13 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
+    <script src="js/main.js"></script>
 </body>
 
 </html>
+
+<?php
+    if (isset($_POST['save'])) {
+        echo "<script>alert('eiei')</script>";
+    }
+?>

@@ -2,15 +2,7 @@
     session_start();
     include('connect.php');
     if(!isset($_SESSION['empid'])){
-         // header("location: index.php");
-         $empName = "Guest";
-         $_SESSION['empJobtitle'] = 'customer';
-    }
-    else 
-    {
-        $empFname = $_SESSION['empFname'];
-        $empLname = $_SESSION['empLname'];
-        $empName = $empFname . ' ' . $empLname ;
+        header("location: index.php");
     }
 ?>
 <!DOCTYPE html>
@@ -24,7 +16,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Product in store</title>
+    <title><?php echo $_GET['id']; ?> - Detail</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -91,24 +83,9 @@
                     <ul>
                         <li ><a href="home.php">Home</a></li>
                         <li><a href="product-add.php">Add Product</a></li>
-                        <li class="active"><a href="product-table.php">Product</a></li>
-                        <li><a href="cart.php">Cart</a></li>
-                        <li><a href="order.php">Order</a></li>
-                        </ul>
-                    </nav>
-                            ';
-                }
-                else if ($_SESSION['empJobtitle'] == "VP Marketing")
-                {
-                    echo '
-                    <nav class="amado-nav">
-                    <ul>
-                        <li ><a href="home.php">Home</a></li>
-                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
-                        <li class="active"><a href="product-table.php">Product</a></li>
-                        <li><a href="cart.php"  class="disabled">Cart</a></li>
-                        <li><a href="order.php" class="disabled">Order</a></li>
-                        <li><a href="discount.php">Discount Generate</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li ><a href="cart.php">Cart</a></li>
+                        <li class="active"><a href="order.php">Order</a></li>
                         </ul>
                     </nav>
                             ';
@@ -118,11 +95,11 @@
                     echo '
                     <nav class="amado-nav">
                     <ul>
-                        <li><a href="home.php">Home</a></li>
+                        <li ><a href="home.php">Home</a></li>
                         <li><a href="product-add.php" class="disabled" >Add Product</a></li>
-                        <li class="active"><a href="product-table.php">Product</a></li>
-                        <li><a href="cart.php"  class="disabled">Cart</a></li>
-                        <li><a href="order.php" class="disabled">Order</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li ><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li class="active"><a href="order.php" class="disabled">Order</a></li>
                         </ul>
                     </nav>
                             ';
@@ -138,96 +115,113 @@
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
-            <?php
-            if($empName != "Guest")
-            {
-                $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
-                $query = mysqli_query($connect, $x1);
-                $data = mysqli_fetch_assoc($query);
-
-                echo "<div>$empName</div>";
-                echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
-            }
-            else
-            {
-                echo "<div>$empName</div>";
-            }
-            ?>
+            <div><?php echo " " . $_SESSION['empFname'] . " " . $_SESSION['empLname']; ?></div>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <?php 
-                if(!isset($_SESSION['empid']))
-                {
-                   echo '<button onclick="loginLink();" type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-sign-out"></i> Log in</button>';
-                }
-                else 
-                {
-                    echo '<button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>';
-                }
-                ?>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
 
-        <div class="amado_product_area section-padding-100">
-            <div class="container-fluid">
-                <div class="cart-title mt-50">
-                    <h2>Product List</h2>
-                    <br>
-                </div>
-                <div class="row">
-                    <div class="col-12">
-                    <table class="table">
-                        <thead >
-                        <tr class="table-info">
-                            <th scope="col">Product C.</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Vendor</th>
-                            <th scope="col-4">Action</th>
-                            </tr>
-                        </thead>
-                        <?php
-                            $sql = "SELECT `productCode`, `productName`, `productVendor` FROM `products`";
-                            $query = mysqli_query($connect, $sql);
-                            while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
-                        ?>
-                        <tbody>
-                            <tr>
-                            <th scope="row"><a class="underline" href="product-details.php?id=<?php echo $result['productCode']; ?>"><?php echo $result['productCode']; ?></a></th>
-                            <td><?php echo $result["productName"]; ?></td>
-                            <td><?php echo $result["productVendor"]; ?></td>
-                            <td width="250">
+        
                                 <?php
-                                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
-                                {
-                                    echo '<a href="product-stock.php?id='.$result["productCode"].'" class="btn btn-outline-warning btn-sm"> Stock </a> 
-                                    <a href="product-update.php?id='.$result["productCode"].'" class="btn btn-outline-success btn-sm"> Update </a>
-                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm disabled" > Remove </a>';
-                                }
-                                else
-                                {
-                                    echo '<a href="product-stock.php?id='.$result["productCode"].'" class="btn btn-outline-warning btn-sm disabled"> Stock </a> 
-                                    <a href="product-update.php?id='.$result["productCode"].'" class="btn btn-outline-success btn-sm disabled"> Update </a>
-                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm disabled"> Remove </a>';
-                                }
-                                ?>
-                            </td>
-                            </tr>
-                        </tbody>
-                        <?php
-                            }
+                        $id = $_GET['id'];
+                        $sql = "SELECT * FROM `orderdetails` WHERE orderNumber = $id";
+                        $query = mysqli_query($connect, $sql);
+                        $resultset = array();
+                        while ($row = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+                            $resultset[] = $row; 
+                        }
                         ?>
-                        </table>
-                        
+        <div class="cart-table-area section-padding-100">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12 col-lg-8">
+                        <div class="cart-title mt-50">
+                            <h2>Order Detail: <?php echo $id;?></h2>
+                        </div>
+
+                        <div class="cart-table clearfix">
+                            <table class="table table-responsive">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Name</th>
+                                        <th>Each Price</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cartItems">
+                                <?php foreach ($resultset as $result){ ?>
+                                    <tr>
+                                        <?php 
+                                        
+                                        $x1 = 'SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE productCode = "'.$result['productCode'].'"';
+                                        $x1_query = mysqli_query($connect, $x1);
+                                        while ($join = mysqli_fetch_array($x1_query, MYSQLI_ASSOC)) {
+
+                                        ?>
+
+                                        <td class="cart_product_img">
+                                            <a href="product-details.php?id=<?php echo $result['productCode']; ?>"><img src="img/product-img/<?php echo $join['image'];?>" alt="Product"></a>
+                                        </td>
+                                        <td class="cart_product_desc">
+                                        <?php 
+                                            echo '<h5>'.$join['productName'].'</h5>';
+                                        }
+                                        ?>
+                                        </td>
+                                        <td class="price">
+                                            $<span class="priceNum"><?php echo $result['priceEach']; ?></span>
+                                        </td>
+                                        <td class="qty">
+                                            <div class="qty-btn d-flex">
+                                                <p>Qty</p>
+                                                <div class="quantity">
+                                                    <!-- <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span> -->
+                                                    <input type="number" class="qty-text priceNum" id="qty" name="quantity" value="<?php echo $result['quantityOrdered']; ?>" readonly>
+                                                    <!-- <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span> -->
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                            $total = 0;
+                                            $total = $total + $result['priceEach'];
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <?php 
+                        $sql = "SELECT * FROM `orders` JOIN `customers` ON customers.customerNumber = orders.customerNumber WHERE orders.orderNumber = $id";
+                        $query = mysqli_query($connect, $sql);
+                        while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+                    ?>
+                    <div class="col-12 col-lg-4">
+                        <form action="" method="POST">
+                        <div class="cart-summary" id="cart-summary">
+                            <h5>Order Summary</h5>
+                            <ul class="summary-table">
+                                <li><span>subtotal:</span> $<span class="priceNum"><?php echo $total; ?></span></li>
+                            </ul>
+                            <label for="exampleFormControlInput1">Customer Name</label>
+                            <input class="form-control" type="text" placeholder="<?php echo $result["customerName"]; ?>" readonly>
+                            <br>
+                            <div class="form-group">
+                                <label >Require Date</label>
+                                <input class="form-control" type="text" placeholder="<?php echo $result["requiredDate"]; ?>" readonly>
+                            </div>
+                            <br>
+                        </div>
+                        <?php } ?>
+                    </form>
                     </div>
                 </div>
-
-
             </div>
         </div>
-        </div>
+    </div>
     <!-- ##### Main Content Wrapper End ##### -->
-
-
 
     <!-- ##### Footer Area Start ##### -->
     <footer class="footer_area clearfix">
@@ -265,35 +259,50 @@
                                         <li class="nav-item">
                                             <a class="nav-link" href="product-add.php">Add Product</a>
                                         </li>
-                                        <li class="nav-item active">
+                                        <li class="nav-item">
                                             <a class="nav-link" href="product-table.php">Product</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" href="cart.php">Cart</a>
                                         </li>
-                                        <li class="nav-item">
+                                        <li class="nav-item active">
                                             <a class="nav-link" href="order.php">Order</a>
                                         </li>
                                     </ul>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li><a href="order.php">Order</a></li>
+                        <li><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
                             ';
                 }
                 else
                 {
                     echo '
                     <ul class="navbar-nav ml-auto">
-                                        <li class="nav-item">
+                                        <li class="nav-item ">
                                             <a class="nav-link" href="home.php">Home</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link disabled" href="product-add.php">Add Product</a>
                                         </li>
-                                        <li class="nav-item active">
+                                        <li class="nav-item">
                                             <a class="nav-link" href="product-table.php">Product</a>
                                         </li>
-                                        <li class="nav-item">
+                                        <li class="nav-item ">
                                             <a class="nav-link disabled" href="cart.php">Cart</a>
                                         </li>
-                                        <li class="nav-item">
+                                        <li class="nav-item active">
                                             <a class="nav-link disabled" href="order.php">Order</a>
                                         </li>
                                     </ul>
@@ -322,6 +331,7 @@
     <script src="js/active.js"></script>
 
     <script src="js/main.js"></script>
+
 </body>
 
 </html>

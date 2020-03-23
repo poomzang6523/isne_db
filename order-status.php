@@ -1,3 +1,10 @@
+<?php
+    session_start();
+    include('connect.php');
+    if(!isset($_SESSION['empid'])){
+        header("location: index.php");
+    }
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,7 +16,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Order Status</title>
+    <title><?php echo $_GET['id']; ?> - Status</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -17,6 +24,7 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
 
 </head>
 
@@ -30,7 +38,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="search-content">
-                        <form action="#" method="get">
+                        <form action="home.php" method="get">
                             <input type="search" name="search" id="search" placeholder="Type your keyword...">
                             <button type="submit"><img src="img/core-img/search.png" alt=""></button>
                         </form>
@@ -67,15 +75,51 @@
                 <a href="home.php"><img src="img/core-img/logo.png" alt=""></a>
             </div>
             <!-- Amado Nav -->
-            <nav class="amado-nav">
-                <ul>
-                    <li><a href="home.php">Home</a></li>
-                    <li><a href="product-add.php">Add Product</a></li>
-                    <li><a href="product-table.php">Product</a></li>
-                    <li><a href="cart.php">Cart</a></li>
-                    <li class="active"><a href="order.php">Order</a></li>
-                </ul>
-            </nav>
+            <?php 
+                if (strpos($_SESSION['empJobtitle'], 'Sale') !== false) 
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li class="active"><a href="order.php">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else if ($_SESSION['empJobtitle'] == "VP Marketing")
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php">Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php">Cart</a></li>
+                        <li class="active"><a href="order.php">Order</a></li>
+                        <li><a href="discount.php">Discount Generate</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+                else
+                {
+                    echo '
+                    <nav class="amado-nav">
+                    <ul>
+                        <li ><a href="home.php">Home</a></li>
+                        <li><a href="product-add.php" class="disabled" >Add Product</a></li>
+                        <li><a href="product-table.php">Product</a></li>
+                        <li><a href="cart.php"  class="disabled">Cart</a></li>
+                        <li class="active"><a href="order.php" class="disabled">Order</a></li>
+                        </ul>
+                    </nav>
+                            ';
+                }
+            ?>
             <!-- Button Group -->
             <div class="amado-btn-group mt-30 mb-100">
                 <a href="customer.php" class="btn amado-btn mb-15">Customer List</a>
@@ -83,78 +127,111 @@
             </div>
             <!-- Cart Menu -->
             <div class="cart-fav-search mb-100">
-                <a href="cart.html" class="cart-nav"><img src="img/core-img/cart.png" alt=""> Cart <span>(0)</span></a>
-                <a href="#" class="fav-nav"><img src="img/core-img/favorites.png" alt=""> Favourite</a>
                 <a href="#" class="search-nav"><img src="img/core-img/search.png" alt=""> Search</a>
             </div>
             <!-- Social Button -->
+            <div><?php echo " " . $_SESSION['empFname'] . " " . $_SESSION['empLname']; ?></div>
             <div class="social-info d-flex justify-content-between sc-emp">
-                <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Employee Name</a>
+                <button onclick="logoutLink();" type="button" class="btn btn-outline-danger btn-sm"><i class="fa fa-sign-out"></i> Log out</button>
             </div>
         </header>
         <!-- Header Area End -->
 
+        <?php
+            $id = $_GET['id'];
+            $sql = "SELECT * FROM `orders` WHERE orders.orderNumber = $id";
+            $query = mysqli_query($connect, $sql);
+            while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
+        ?>
         <div class="amado_product_area section-padding-100">
             <div class="container-fluid">
                 <div class="cart-title mt-50">
-                    <h2>Order Status: 10421</h2>
+                    <h2>Order Status: <?php echo $result["orderNumber"]; ?></h2>
                     <br>
                 </div>
                 <div class="row">
                     <div class="col-12">
                    
-                    <form>
+                    <form action="" method="POST">
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Order Number</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" value="10421">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["orderNumber"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Order Date</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" value="2005-04-22">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php echo $result["orderDate"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Require Date</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" value="2005-04-29">
+                                <input type="date" id="requireDate" class="form-control" name="require_date" value="<?php echo $result["requiredDate"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Shipped Date</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" value="">
+                                <input type="date" id="shipDate" class="form-control" name="shipped_date" value="<?php echo $result["shippedDate"]; ?>">
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Status</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" value="In Process">
+                                <!-- <input type="text" class="form-control-plaintext" value="<?php echo $result["status"]; ?>"> -->
+                                <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="status">
+                                    <option value="<?php echo $result["status"]; ?>" selected><?php echo $result["status"]; ?></option>
+                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="Disputed">Disputed</option>
+                                    <option value="In process">In process</option>
+                                    <option value="On hold">On hold</option>
+                                    <option value="Resolved">Resolved</option>
+                                    <option value="Shipped">Shipped</option>
+                                </select>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Customer Number</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" value="124">
+                                <input type="text" readonly class="form-control-plaintext" name="cusNo" value="<?php echo $result["customerNumber"]; ?>">
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <!-- <div class="form-group row">
                             <label class="col-sm-2 col-form-label">Comment</label>
                             <div class="col-sm-10">
-                                <input type="text" readonly class="form-control-plaintext" value="Custom shipping instructions were sent to warehouse">
+                                <input type="text" readonly class="form-control-plaintext" value="<?php //echo $result["comments"]; ?>">
+                            </div>
+                        </div> -->
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" for="exampleFormControlTextarea1">Comment</label>
+                            <div class="col-sm-10">
+                            <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="comment"><?php echo $result["comments"]; ?></textarea>
                             </div>
                         </div>
                         <div class="form-group row">
                             <label for="inputPassword" class="col-sm-2 col-form-label">Payment</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" placeholder="Cheque Number">
+                                <input type="text" class="form-control" placeholder="Cheque Number" name="cheque">
                             </div>
                         </div>
                         <br><br>
-                        <button type="button" class="btn btn-success" style="float:right;">Process Order</button>
-                    </form>    
+                        <div class="bd-example" style ="float:right;">
+                            <button type="submit" class="btn btn-success" name="update"><i class="fa fa-floppy-o" aria-hidden="true"></i>  Save Changes</button>
+                            <?php
+                                if($result["status"] != "Shipped") {
+                            ?>
+                                    <button type="submit" class="btn btn-primary" name="process"><i class="fa fa-arrow-right" aria-hidden="true"></i>  Process Order</button>
+                            <?php
+                                }
+                            ?>
+                        </div>
+                        
+                    </form>
+                    <?php
+                        }
+                    ?>    
 
                     </div>
                 </div>
@@ -180,7 +257,7 @@
                         </div>
                         <!-- Copywrite Text -->
                         <p class="copywrite">
-                            Database 1/62 Term Project | Faculty of Engineering, Chiangmai University
+                            Database 2/62 Term Project | Faculty of Engineering, Chiangmai University
                         </p>
                     </div>
                 </div>
@@ -230,6 +307,30 @@
     <!-- Active js -->
     <script src="js/active.js"></script>
 
+    <script src="js/main.js"></script>
+
 </body>
 
 </html>
+
+<?php
+    if(isset($_POST['update'])) {
+        $update = "UPDATE `orders` SET requiredDate = '" . $_POST['require_date'] . "', shippedDate = '" . $_POST['shipped_date'] . "', status = '" . $_POST['status'] . "', comments = '" . $_POST['comment'] . "' WHERE orderNumber = $id";
+        mysqli_query($connect, $update);
+        echo "<script>window.location = 'order.php'; </script>";
+    }
+    // if(isset($_POST['process'])) {
+    //     $checkNo_s = "SELECT DISTINCT checkNumber FROM `payments`";
+    //     $checkNo_q = mysqli_query($connect, $checkNo_s);
+    //     while ($checkNo = mysqli_fetch_array($checkNo_q, MYSQLI_ASSOC)) {
+    //         if($checkNo['checkNumber'] != $_POST['cheque']) {
+    //             $pay = "INSERT INTO `payments` (`customerNumber`, `checkNumber`, `paymentDate`, `amount`) VALUES ('" . $_POST['cusNo'] . "', '" . $_POST['cheque'] . "', CURRENT_DATE, '" . $_POST['amount'] . "')";
+    //             mysqli_query($connect, $pay);
+    //             echo "<script>window.location = 'order.php'; </script>";
+    //         }
+    //         else {
+    //             echo "<script>alert('Duplicated Cheque Number');</script>";
+    //         }
+    //     }
+    // }
+?>
