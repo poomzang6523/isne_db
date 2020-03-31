@@ -46,3 +46,4 @@ function logoutLink(){
 function loginLink(){
   window.location = 'index.php';
 }
+

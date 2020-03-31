@@ -194,7 +194,15 @@
                             <td class="qty">
                             <div class="quantity">
                                     <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
-                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="300" name="quantity" value="1">
+                                    <?php
+                                        $sql_instock = "SELECT * FROM `products` WHERE productCode = '$id'";
+                                        $query_instock = mysqli_query($connect, $sql_instock);
+                                        while ($max = mysqli_fetch_array($query_instock, MYSQLI_ASSOC)) {
+                                    ?>
+                                    <input type="number" class="qty-text" id="qty" step="1" min="1" max="<?php echo $max['quantityInStock']; ?>" name="quantity" value="1">
+                                    <?php
+                                        }
+                                    ?>
                                     <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
                                     <button type="submit" class="btn btn-outline-primary" name="transfer">Transfer</button>
                             </div>
@@ -311,14 +319,42 @@
 </html>
 
 <?php
-    // if(isset($_POST['transfer'])) {
-    //     $share_product = "UPDATE `branches` SET qty = qty - " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['from'] . "'";
-    //     $share_product .= "INSERT INTO `branches` (`productCode`, `officeCode`, `qty`) VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
-    //     if(!mysqli_multi_query($connect, $share_product)) {
-    //         echo "<script>alert('Fail to transfer. Please try again')</script>";
-    //     }
-    //     else {
-    //         echo "<script>window.location = 'product-table.php';</script>";
-    //     }
+    if(isset($_POST['transfer'])) {
+        $share_product = "UPDATE `branches` SET qty = qty - " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['from'] . "'";
+        if(mysqli_query($connect, $share_product)) {
+            $branch_stock = "SELECT officeCode FROM `branches` WHERE productCode = '" . $_GET['id'] . "'";
+            $branch_stock_query = mysqli_query($connect, $branch_stock);
+            while ($branch = mysqli_fetch_array($branch_stock_query, MYSQLI_ASSOC)) {
+                if ($_POST['to'] == $branch['officeCode']) {
+                    $update_branch_qty = "UPDATE `branches` SET qty = qty + " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
+                    if (mysqli_query($connect, $update_branch_qty)) {
+                        echo "<script>window.location = 'product-table.php'; </script>";
+                    }
+                    else {
+                        echo "<script>alert('Fail to transfer. Please try again'); </script>";
+                    }
+                }
+            }
+            // else {
+            //     $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
+            //     if(mysqli_query($connect, $new_branch)) {
+            //         echo "<script>window.location = 'product-table.php'; </script>";
+            //     }
+            //     else {
+            //         echo "<script>alert('Fail to transfer. Please try again'); </script>";
+            //     }
+            // }
+        }
+        else {
+            echo "<script>alert('Fail to transfer. Please try again'); </script>";
+        }
+    }
+
+    // $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
+    // if(mysqli_query($connect, $new_branch)) {
+    //     echo "<script>window.location = 'product-table.php'; </script>";
+    // }
+    // else {
+    //     echo "<script>alert('Fail to transfer. Please try again'); </script>";
     // }
 ?>

@@ -50,7 +50,7 @@ session_start();
 						<img src="img/core-img/logo.png" alt="">
 					</span>
 
-					<div class="wrap-input100 validate-input">
+					<div class="wrap-input100 validate-input" data-validate="Employee ID is required">
 						<input class="input100" type="text" name="empid" placeholder="Employee ID">
 						<span class="focus-input100-1"></span>
 						<span class="focus-input100-2"></span>
@@ -100,7 +100,7 @@ session_start();
 	<script src="Login_v19/vendor/daterangepicker/moment.min.js"></script>
 	<script src="Login_v19/vendor/daterangepicker/daterangepicker.js"></script>
 <!--===============================================================================================-->
-	<script src="vendor/countdowntime/countdowntime.js"></script>
+	<script src="Login_v19/vendor/countdowntime/countdowntime.js"></script>
 <!--===============================================================================================-->
 	<script src="Login_v19/js/main.js"></script>
 

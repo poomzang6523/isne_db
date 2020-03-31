@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="js/alert.js"></script>
 <?php
             if(isset($_POST['add_to_cart'])) {
                 if(isset($_SESSION['shopping_cart'])) {
@@ -53,13 +54,11 @@
                             'img' => $_POST['hd_img']
                         );
                         $_SESSION['shopping_cart'][$count] = $item_array;
-                        echo "<script>alert('Added item successfully');</script>";
-                        echo "<script>window.location='product-details.php?id=".$_GET['id']."'</script>";
+                        echo "<script>window.location='blank.php?alert=added'</script>";
                         
                     }
                     else {
-                        echo "<script>alert('Item already added')</script>";
-                        echo "<script>window.location='cart.php'</script>";
+                        echo "<script>window.location='blank.php?alert=already'</script>";
                     }
                 }
                 else {
@@ -71,8 +70,7 @@
                         'img' => $_POST['hd_img']
                     );
                     $_SESSION['shopping_cart'][0] = $item_array;
-                    echo "<script>alert('Added item successfully');</script>";
-                    echo "<script>window.location='product-details.php?id=".$_GET['id']."'</script>";
+                    echo "<script>window.location='blank.php?alert=added'</script>";
                 }
             }
         

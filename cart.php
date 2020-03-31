@@ -199,6 +199,9 @@
                                                 $total = $total + ($values['quantity'] * $values['price']);
                                             }
                                         }
+                                        else {
+                                            $total = 0;
+                                        }
                                     ?>
                                 </tbody>
                             </table>
@@ -209,7 +212,8 @@
                         <div class="cart-summary" id="cart-summary">
                             <h5>Cart Total</h5>
                             <ul class="summary-table">
-                                <li><span>subtotal:</span> $<span class="priceNum"><?php echo $total; ?></span></li>
+                                <li><span>Subtotal:</span> $<span><?php echo $total; ?></span></li>
+                                <li><span>Point:</span> <span><?php echo (floor(($total/100)) * 3); ?></span></li>
                             </ul>
                             <div class="product-sorting d-flex">
                                 <div class="sort-by-date d-flex align-items-center mr-15">
