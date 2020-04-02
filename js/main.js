@@ -47,3 +47,17 @@ function loginLink(){
   window.location = 'index.php';
 }
 
+function openAlertOrdersuccess(orderNumber){
+  var order = orderNumber;
+  console.log(order);
+  Swal.fire({
+    title: 'Your order has been placed!',
+    text: "Your order number is: "+ order,
+    icon: 'success',
+    confirmButtonText: 'OK'
+  }).then((result) => {
+    if (result.value) {
+      window.location = 'order-status.php?id='+order;
+    }
+  })
+}

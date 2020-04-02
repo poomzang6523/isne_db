@@ -183,6 +183,7 @@
                                 <!-- <input type="text" class="form-control-plaintext" value="<?php echo $result["status"]; ?>"> -->
                                 <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="status">
                                     <option value="<?php echo $result["status"]; ?>" selected><?php echo $result["status"]; ?></option>
+                                    <option value="In Progress">In Progress</option>
                                     <option value="Cancelled">Cancelled</option>
                                     <option value="Disputed">Disputed</option>
                                     <option value="In process">In process</option>

@@ -213,11 +213,12 @@
                             <h5>Cart Total</h5>
                             <ul class="summary-table">
                                 <li><span>Subtotal:</span> $<span><?php echo $total; ?></span></li>
-                                <li><span>Point:</span> <span><?php echo (floor(($total/100)) * 3); ?></span></li>
+                                <li><span>Point earned:</span> <span><?php echo (floor(($total/100)) * 3); ?></span></li>
+                                <input type="hidden" class="form-control" name="pointReceive" value="<?php echo (floor(($total/100)) * 3); ?>">
                             </ul>
                             <div class="product-sorting d-flex">
                                 <div class="sort-by-date d-flex align-items-center mr-15">
-                                <select class="custom-select mr-sm" id="customerName">
+                                <select class="custom-select mr-sm" id="customer" name="customer">
                                 <?php
                                 $sql = "SELECT * FROM `customers` WHERE salesRepEmployeeNumber = '".$_SESSION['empid']."' OR salesRepEmployeeNumber IS NULL ORDER BY customerName ASC";
                                 $query = mysqli_query($connect, $sql);
@@ -232,9 +233,14 @@
                             </div>
                             <br>
                             <div class="form-group">
-                                <label >Require Date</label>
-                                <input type="date" class="form-control">
+                                <label >Required Date</label>
+                                <input type="date" class="form-control" name="required">
                             </div>
+                            <!-- <br>
+                            <div class="form-group">
+                                <label >Preferred Shipping Date</label>
+                                <input type="date" class="form-control" name="shipped">
+                            </div> -->
                             <br>
                             <div class="form-group">
                                 <label >Coupon</label>
@@ -242,11 +248,11 @@
                             </div>
                             <div class="form-group">
                                 <label>Comment</label>
-                                <textarea class="form-control"rows="3"></textarea>
-                              </div>
+                                <textarea class="form-control"rows="3" name="comments"></textarea>
+                            </div>
                             <div class="cart-btn mt-100">
                                 <!-- <a href="cart.php" class="btn amado-btn w-100">Next</a> -->
-                                <button type="button" class="btn amado-btn w-100" >Place your order</button>
+                                <button type="submit" class="btn amado-btn w-100" name="order">Place your order</button>
                             </div>
                         </div>
                     </form>
@@ -368,4 +374,38 @@
 
 </body>
 
+<?php
+    if(isset($_POST['order'])) {
+        $get_orderNo = "SELECT orderNumber FROM `orders` ORDER BY orderNumber DESC";
+        $query_orderNo = mysqli_query($connect, $get_orderNo);
+        $result = mysqli_fetch_array($query_orderNo, MYSQLI_ASSOC);
+        $orderNo = $result['orderNumber'] + 1;
+        // if (isset($_POST['required'])) {
+            $place_order = "INSERT INTO `orders`(`orderNumber`, `orderDate`, `requiredDate`, `shippedDate`, `status`, `comments`, `customerNumber`) VALUES ('$orderNo', CURRENT_TIME, '" . $_POST['required'] . "', NULL, 'In Progress', '" . $_POST['comments'] . "','" . $_POST['customer'] . "')";
+        // }
+        // else {
+        //     $place_order = "INSERT INTO `orders`(`orderNumber`, `orderDate`, `requiredDate`, `shippedDate`, `status`, `comments`, `customerNumber`) VALUES ('$orderNo', CURRENT_TIME, '" . $_POST['required'] . "', NULL, 'In Progress', '" . $_POST['comments'] . "','" . $_POST['customer'] . "')";
+        // }
+        mysqli_query($connect, $place_order);
+        if(!empty($_SESSION['shopping_cart'])) {
+            foreach($_SESSION['shopping_cart'] as $keys => $values) {
+                $id = $values['id'];
+                $qty = $values['quantity'];
+                $price = $values['price'];
+                $sql_x1 = "INSERT INTO `orderdetails` (`orderNumber`, `productCode`, `quantityOrdered`, `priceEach`, `orderLineNumber`) VALUES ('$orderNo', '$id', '$qty', '$price', '1')";
+                mysqli_query($connect, $sql_x1);
+            }
+        }
+        $get_point = "SELECT `point` FROM `customers` WHERE `customers`.`customerNumber` = '" . $_POST['customer'] . "'";
+        $query_point = mysqli_query($connect, $get_point);
+        $result = mysqli_fetch_array($query_point, MYSQLI_ASSOC);
+        $pointEarn = $result['point'] + $_POST['pointReceive'];
+        $customer_sql = "UPDATE `customers` SET `point` = '$pointEarn' WHERE `customers`.`customerNumber` = '" . $_POST['customer'] . "'";
+        if(mysqli_query($connect, $customer_sql))
+        {
+            unset($_SESSION['shopping_cart']);
+            echo "<script>openAlertOrdersuccess($orderNo);</script>";
+        }
+    }
+?>
 </html>

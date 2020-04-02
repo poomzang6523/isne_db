@@ -335,7 +335,7 @@
                     }
                 }
             }
-            // else {
+            // if ($_POST['to']) {
             //     $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
             //     if(mysqli_query($connect, $new_branch)) {
             //         echo "<script>window.location = 'product-table.php'; </script>";

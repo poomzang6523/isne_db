@@ -202,6 +202,23 @@
                                             '.$result["status"].'
                                         </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Progress">In Progress</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=On Hold">On Hold</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Resolved">Resolved</a>
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Shipped">Shipped</a>
+                                                </div>
+                                        ';
+                                    }
+                                    if($result["status"] == "In Progress")
+                                    {
+                                        echo '
+                                        <button class="btn btn-dark btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            '.$result["status"].'
+                                        </button>
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
@@ -218,6 +235,7 @@
                                             '.$result["status"].'
                                         </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Progress">In Progress</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
@@ -234,6 +252,7 @@
                                             '.$result["status"].'
                                         </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Progress">In Progress</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
@@ -250,6 +269,7 @@
                                             '.$result["status"].'
                                         </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Progress">In Progress</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
@@ -266,6 +286,7 @@
                                             '.$result["status"].'
                                         </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Progress">In Progress</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
@@ -282,6 +303,7 @@
                                             '.$result["status"].'
                                         </button>
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Progress">In Progress</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Cancelled">Cancelled</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=Disputed">Disputed</a>
                                                     <a class="dropdown-item" href="order-updatestatus.php?orderno='.$result["orderNumber"].'&prev='.$result["status"].'&to=In Process">In Process</a>
