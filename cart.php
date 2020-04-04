@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 </head>
 
@@ -212,8 +213,11 @@
                         <div class="cart-summary" id="cart-summary">
                             <h5>Cart Total</h5>
                             <ul class="summary-table">
-                                <li><span>Subtotal:</span> $<span><?php echo $total; ?></span></li>
+                                <li><span>Subtotal:</span> $<span id="subtotal"><?php echo $total; ?></span></li>
+                                <li><span>Discount:</span> %<span id="percent">0</span></li>
+                                <li><span>Total:</span> $<span id="total"><?php echo $total; ?></span></li>
                                 <li><span>Point earned:</span> <span><?php echo (floor(($total/100)) * 3); ?></span></li>
+                                <input type="hidden" class="form-control" id="total" name="total" value="<?php echo $total; ?>">
                                 <input type="hidden" class="form-control" name="pointReceive" value="<?php echo (floor(($total/100)) * 3); ?>">
                             </ul>
                             <div class="product-sorting d-flex">
@@ -234,17 +238,12 @@
                             <br>
                             <div class="form-group">
                                 <label >Required Date</label>
-                                <input type="date" class="form-control" name="required">
+                                <input type="date" class="form-control" name="required_d" required>
                             </div>
-                            <!-- <br>
-                            <div class="form-group">
-                                <label >Preferred Shipping Date</label>
-                                <input type="date" class="form-control" name="shipped">
-                            </div> -->
                             <br>
                             <div class="form-group">
                                 <label >Coupon</label>
-                                <input type="text" class="form-control" placeholder="Coupon Number">
+                                <input type="text" class="form-control" placeholder="Coupon Number" oninput="checkDis();" name="discount">
                             </div>
                             <div class="form-group">
                                 <label>Comment</label>
@@ -374,38 +373,42 @@
 
 </body>
 
+</html>
+
 <?php
     if(isset($_POST['order'])) {
-        $get_orderNo = "SELECT orderNumber FROM `orders` ORDER BY orderNumber DESC";
-        $query_orderNo = mysqli_query($connect, $get_orderNo);
-        $result = mysqli_fetch_array($query_orderNo, MYSQLI_ASSOC);
-        $orderNo = $result['orderNumber'] + 1;
-        // if (isset($_POST['required'])) {
-            $place_order = "INSERT INTO `orders`(`orderNumber`, `orderDate`, `requiredDate`, `shippedDate`, `status`, `comments`, `customerNumber`) VALUES ('$orderNo', CURRENT_TIME, '" . $_POST['required'] . "', NULL, 'In Progress', '" . $_POST['comments'] . "','" . $_POST['customer'] . "')";
-        // }
-        // else {
-        //     $place_order = "INSERT INTO `orders`(`orderNumber`, `orderDate`, `requiredDate`, `shippedDate`, `status`, `comments`, `customerNumber`) VALUES ('$orderNo', CURRENT_TIME, '" . $_POST['required'] . "', NULL, 'In Progress', '" . $_POST['comments'] . "','" . $_POST['customer'] . "')";
-        // }
-        mysqli_query($connect, $place_order);
         if(!empty($_SESSION['shopping_cart'])) {
+            $get_orderNo = "SELECT orderNumber FROM `orders` ORDER BY orderNumber DESC";
+            $query_orderNo = mysqli_query($connect, $get_orderNo);
+            $result = mysqli_fetch_array($query_orderNo, MYSQLI_ASSOC);
+            $orderNo = $result['orderNumber'] + 1;
+            $place_order = "INSERT INTO `orders` (`orderNumber`, `orderDate`, `requiredDate`, `shippedDate`, `status`, `comments`, `customerNumber`, `subtotal`, `point`) VALUES ('$orderNo', CURRENT_TIME, '" . $_POST['required_d'] . "', NULL, 'In Progress', '" . $_POST['comments'] . "','" . $_POST['customer'] . "', '" . $_POST['total'] . "', '" . $_POST['pointReceive'] . "')";
+            mysqli_query($connect, $place_order);
             foreach($_SESSION['shopping_cart'] as $keys => $values) {
                 $id = $values['id'];
                 $qty = $values['quantity'];
                 $price = $values['price'];
                 $sql_x1 = "INSERT INTO `orderdetails` (`orderNumber`, `productCode`, `quantityOrdered`, `priceEach`, `orderLineNumber`) VALUES ('$orderNo', '$id', '$qty', '$price', '1')";
                 mysqli_query($connect, $sql_x1);
+                $reduce_product1 = "UPDATE `products` SET quantityInStock = quantityInStock - '$qty' WHERE productCode = '$id'";
+                mysqli_query($connect, $reduce_product1);
+                $reduce_product2 = "UPDATE `branches` SET qty = qty - '$qty' WHERE productCode = '$id' AND officeCode = '" . $_SESSION['empOffice'] . "'";
+                mysqli_query($connect, $reduce_product2);
             }
-        }
-        $get_point = "SELECT `point` FROM `customers` WHERE `customers`.`customerNumber` = '" . $_POST['customer'] . "'";
-        $query_point = mysqli_query($connect, $get_point);
-        $result = mysqli_fetch_array($query_point, MYSQLI_ASSOC);
-        $pointEarn = $result['point'] + $_POST['pointReceive'];
-        $customer_sql = "UPDATE `customers` SET `point` = '$pointEarn' WHERE `customers`.`customerNumber` = '" . $_POST['customer'] . "'";
-        if(mysqli_query($connect, $customer_sql))
-        {
-            unset($_SESSION['shopping_cart']);
-            echo "<script>openAlertOrdersuccess($orderNo);</script>";
+            if (isset($_POST['discount'])) {
+                $count_discount = "UPDATE `promotions` SET count = count - 1 WHERE code = '" . $_POST['discount'] . "'";
+                mysqli_query($connect, $count_discount);
+            }
+            $get_point = "SELECT `point` FROM `customers` WHERE `customers`.`customerNumber` = '" . $_POST['customer'] . "'";
+            $query_point = mysqli_query($connect, $get_point);
+            $result = mysqli_fetch_array($query_point, MYSQLI_ASSOC);
+            $pointEarn = $result['point'] + $_POST['pointReceive'];
+            $customer_sql = "UPDATE `customers` SET `point` = '$pointEarn' WHERE `customers`.`customerNumber` = '" . $_POST['customer'] . "'";
+            if(mysqli_query($connect, $customer_sql))
+            {
+                unset($_SESSION['shopping_cart']);
+                echo "<script>openAlertOrdersuccess($orderNo);</script>";
+            }
         }
     }
 ?>
-</html>

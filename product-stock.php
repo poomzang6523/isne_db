@@ -130,7 +130,8 @@
                 $x1 = "SELECT * FROM `offices` WHERE `officeCode` = ".$_SESSION['empOffice']."";
                 $query = mysqli_query($connect, $x1);
                 $data = mysqli_fetch_assoc($query);
-
+                
+                $empCityName = $data['city'];
                 echo "<div>$empName</div>";
                 echo "<div id='subPrefix'>".$_SESSION['empJobtitle']."<br>".$data['city'].", ".$data['country']."</div><br>";
             }
@@ -165,22 +166,22 @@
                     <div class="col-12">
                         <table class="table">
                         <thead>
-                            <tr class="table-active">
-                            <th scope="col">From branch</th>
-                            <th scope="col">Transfer to</th>
-                            <th scope="col">Amount</th>
+                            <tr class="table-warning">
+                            <th scope="col-2">Available branch</th>
+                            <th scope="col-2">Transfer to</th>
+                            <th scope="col-2">Amount</th>
                             </tr>
                         </thead>
-                        <tbody id="cartItems">
+                        <tbody>
                             <tr>
                             <td><form action="" method="POST">
                                     <select class="form-control" name="from">
                                     <?php
-                                        $branches = "SELECT DISTINCT officeCode FROM `branches` WHERE productCode = '$id'";
+                                        $branches = "SELECT DISTINCT branches.officeCode,offices.city FROM branches JOIN offices ON branches.officeCode = offices.officeCode WHERE branches.productCode = '$id'";
                                         $bquery = mysqli_query($connect, $branches);
-                                        while ($pbranches = mysqli_fetch_array($bquery, MYSQLI_ASSOC)) {
+                                        while ($pbranches = mysqli_fetch_array($bquery, MYSQLI_ASSOC)) { 
                                     ?>
-                                        <option value="<?php echo $pbranches['officeCode']; ?>">Branch <?php echo $pbranches['officeCode']; ?></option>
+                                        <option value="<?php echo $pbranches['officeCode']; ?>">Branch <?php echo $pbranches['officeCode']; ?>: <?php echo $pbranches['city']; ?></option>
                                     <?php
                                         }
                                     ?> 
@@ -188,9 +189,9 @@
                             </td>
                             <td>
                                     <select class="form-control" name="to">
-                                        <option value="<?php echo $_SESSION['empOffice'];?>" selected>Branch <?php echo $_SESSION['empOffice'];?></option>
+                                        <option value="<?php echo $_SESSION['empOffice'];?>" selected>Branch <?php echo $_SESSION['empOffice'];?>: <?php echo $empCityName; ?></option>
                                     </select>  
-                                </td>
+                            </td>
                             <td class="qty">
                             <div class="quantity">
                                     <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span>
@@ -204,7 +205,7 @@
                                         }
                                     ?>
                                     <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span>
-                                    <button type="submit" class="btn btn-outline-primary" name="transfer">Transfer</button>
+                                    <button type="submit" class="btn btn-outline-primary" name="transfer"><i class="fa fa-angle-double-right" aria-hidden="true"></i> Transfer</button>
                             </div>
                             </td></form>
                             </tr>
@@ -322,19 +323,42 @@
     if(isset($_POST['transfer'])) {
         $share_product = "UPDATE `branches` SET qty = qty - " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['from'] . "'";
         if(mysqli_query($connect, $share_product)) {
-            $branch_stock = "SELECT officeCode FROM `branches` WHERE productCode = '" . $_GET['id'] . "'";
+            $branch_stock = "SELECT officeCode FROM `branches` WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
             $branch_stock_query = mysqli_query($connect, $branch_stock);
-            while ($branch = mysqli_fetch_array($branch_stock_query, MYSQLI_ASSOC)) {
-                if ($_POST['to'] == $branch['officeCode']) {
-                    $update_branch_qty = "UPDATE `branches` SET qty = qty + " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
-                    if (mysqli_query($connect, $update_branch_qty)) {
-                        echo "<script>window.location = 'product-table.php'; </script>";
-                    }
-                    else {
-                        echo "<script>alert('Fail to transfer. Please try again'); </script>";
-                    }
+            if (mysqli_num_rows($branch_stock_query) == 0) {
+                $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
+                if(mysqli_query($connect, $new_branch)) {
+                    echo "<script>window.location = 'product-table.php'; </script>";
+                }
+                else {
+                    echo "<script>alert('Fail to transfer. Please try again'); </script>";
                 }
             }
+            else {
+                $update_branch_qty = "UPDATE `branches` SET qty = qty + " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
+                if (mysqli_query($connect, $update_branch_qty)) {
+                    echo "<script>window.location = 'product-table.php'; </script>";
+                }
+                else {
+                    echo "<script>alert('Fail to transfer. Please try again'); </script>";
+                }
+            }
+        }
+        else {
+            echo "<script>alert('Fail to transfer. Please try again'); </script>";
+        }
+    }
+        // while ($branch = mysqli_fetch_array($branch_stock_query, MYSQLI_ASSOC)) {
+            //     if ($_POST['to'] == $branch['officeCode']) {
+            //         $update_branch_qty = "UPDATE `branches` SET qty = qty + " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
+            //         if (mysqli_query($connect, $update_branch_qty)) {
+            //             echo "<script>window.location = 'product-table.php'; </script>";
+            //         }
+            //         else {
+            //             echo "<script>alert('Fail to transfer. Please try again'); </script>";
+            //         }
+            //     }
+            // }
             // if ($_POST['to']) {
             //     $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
             //     if(mysqli_query($connect, $new_branch)) {
@@ -344,17 +368,4 @@
             //         echo "<script>alert('Fail to transfer. Please try again'); </script>";
             //     }
             // }
-        }
-        else {
-            echo "<script>alert('Fail to transfer. Please try again'); </script>";
-        }
-    }
-
-    // $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
-    // if(mysqli_query($connect, $new_branch)) {
-    //     echo "<script>window.location = 'product-table.php'; </script>";
-    // }
-    // else {
-    //     echo "<script>alert('Fail to transfer. Please try again'); </script>";
-    // }
 ?>

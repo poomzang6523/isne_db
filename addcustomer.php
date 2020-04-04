@@ -312,10 +312,10 @@
 </html>
 <?php
     if(isset($_POST['add'])) {
-        $addcus = "INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit) VALUES ('" . $_POST['cNumber'] . "', '" . $_POST['cName'] . "', '" . $_POST['cLastname'] . "', '" . $_POST['cFirstname'] . "', '" . $_POST['cPhone'] . "', '" . $_POST['cAddr1'] . "', '" . $_POST['cAddr2'] . "', '" . $_POST['cCity'] . "', '" . $_POST['cState'] . "', '" . $_POST['cPostal'] . "', '" . $_POST['cCountry'] . "', '" . $_SESSION['empid'] . "', '1000')";
+        $addcus = "INSERT INTO customers (customerNumber, customerName, contactLastName, contactFirstName, phone, addressLine1, addressLine2, city, state, postalCode, country, salesRepEmployeeNumber, creditLimit, point) VALUES ('" . $_POST['cNumber'] . "', '" . $_POST['cName'] . "', '" . $_POST['cLastname'] . "', '" . $_POST['cFirstname'] . "', '" . $_POST['cPhone'] . "', '" . $_POST['cAddr1'] . "', '" . $_POST['cAddr2'] . "', '" . $_POST['cCity'] . "', '" . $_POST['cState'] . "', '" . $_POST['cPostal'] . "', '" . $_POST['cCountry'] . "', '" . $_SESSION['empid'] . "', '1000', '0')";
         // $addcus = "INSERT INTO `customers` (`customerNumber`, `customerName`, `contactLastName`, `contactFirstName`, `phone`, `addressLine1`, `addressLine2`, `city`, `state`, `postalCode`, `country`, `salesRepEmployeeNumber`, `creditLimit`) VALUES ('$_POST["cNumber"]', '$_POST["cName"]', '$_POST["cLastname"]', '$_POST["cFirstname"]', '$_POST["cPhone"]', '$_POST["cAddr1"]', '$_POST["cAddr2"]', '$_POST["cCity"]', '$_POST["cState"]', '$_POST["cPostal"]', '$_POST["cCountry"]', $_SESSION['empid'], '10000')";
         if(!mysqli_query($connect, $addcus)) {
-           echo "<script>alert('eiei')</script>";
+           echo "<script>alert('Fail to be a member. Please try again')</script>";
         }
         else {
             echo "<script>

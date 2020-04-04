@@ -201,7 +201,7 @@
                                 {
                                     echo '<a href="product-stock.php?id='.$result["productCode"].'" class="btn btn-outline-warning btn-sm"> Stock </a> 
                                     <a href="product-update.php?id='.$result["productCode"].'" class="btn btn-outline-success btn-sm"> Update </a>
-                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm disabled" > Remove </a>';
+                                    <a href="product-remove.php?id='.$result["productCode"].'" class="btn btn-outline-danger btn-sm" > Remove </a>';
                                 }
                                 else
                                 {

@@ -172,13 +172,21 @@
         <form action="" method="POST">
         <div class="form-group">
           <label>Discount ID</label>
-          <input type="text" class="form-control" id="codeNo" name="codeNo">
+          <input type="text" class="form-control" id="codeNo" name="codeNo" size="10" maxlength="10" style="text-transform:uppercase">
         </div>
         <div class="form-group">
           <label>Exp. Date</label>
           <input type="date" class="form-control" id="date" name="date">
         </div>
-        <button type="submit" class="btn btn-success" id="add">Add to database</button>
+        <div class="form-group">
+          <label>Discount Percent</label>
+          <input type="text" class="form-control" id="percent" name="percent">
+        </div>
+        <div class="form-group">
+          <label>Used Time</label>
+          <input type="text" class="form-control" id="percent" name="used_time">
+        </div>
+        <button type="submit" class="btn btn-success" id="add">Generate</button>
       </form>
     </div>
   </div>
@@ -294,28 +302,28 @@ bootstrapValidate('#codeNo', 'alphanum:Please only enter alphanumeric characters
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
-        if (isset($_POST['codeNo'], $_POST['date']))
-        {
-            $codeNo = htmlentities(mysqli_real_escape_string($connect, $_POST['codeNo']));
-            $date = htmlentities(mysqli_real_escape_string($connect, $_POST['date']));
-            
-            $sql = "INSERT INTO `promotions` (`code`, `expireDate`, `count`) VALUES ('$codeNo', '$date', '0')";
-            $run_update = mysqli_query($connect,$sql);
-            if($run_update) {
-                echo "<script>
-                                    Swal.fire({
-                                       text: 'Added discount successful',
-                      icon: 'success'
-                                    }).then(function() {
-                                        window.location = 'discount.php';
-                                    });
-                    </script>";
-            }
-            else 
-            {
-                echo $codeNo.''.$date;
-            }
+        $con = mysqli_connect("localhost","root","","db_261342");
+        session_start();
+        if (isset($_POST['codeNo']) AND isset($_POST['percent']) AND isset($_POST['date']) AND isset($_POST['used_time']))
+    {
+        $codeNo = htmlentities(mysqli_real_escape_string($con, $_POST['codeNo']));
+        $codeNo = strtoupper($codeNo);
+        $discount = htmlentities(mysqli_real_escape_string($con, $_POST['percent']));
+        $date = htmlentities(mysqli_real_escape_string($con, $_POST['date']));
+        $time = htmlentities(mysqli_real_escape_string($con, $_POST['used_time']));
+        $update = "INSERT INTO `promotions` (`code`, `discount`, `expireDate`, `count`) VALUES ('$codeNo', '$discount', '$date', '$time')";
+        $run_update = mysqli_query($con,$update);
+        if($run_update) {
+            echo "<script>
+								Swal.fire({
+   								text: 'Added discount successful',
+                  icon: 'success'
+								}).then(function() {
+   				 				window.location = 'discount.php';
+								});
+				</script>";
         }
+    }
         else 
             {
                 echo "<script>alert('fail to pass value')</script>";

@@ -61,3 +61,25 @@ function openAlertOrdersuccess(orderNumber){
     }
   })
 }
+
+function checkDis(){
+  $('input[name="discount"]').keyup(function(){
+    console.log($(this).val());
+    var id = $(this).val();
+				$.ajax({
+					url:"check.php",
+					method:"POST",
+					data:{id:id},
+					success:function(data)
+					{
+            document.getElementById("percent").textContent=data;
+            var subtotal = $("#subtotal").text();
+            var percent = $("#percent").text();
+                percent = percent/100;
+            var total = subtotal - (subtotal*percent);
+            console.log('Subtotal:'+subtotal+'percent'+percent+'total'+total);
+            document.getElementById("total").textContent=total;
+					}
+				});
+      });
+}

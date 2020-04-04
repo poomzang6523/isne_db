@@ -178,15 +178,26 @@
                                                 <p>Qty</p>
                                                 <div class="quantity">
                                                     <!-- <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 0 ) effect.value--;return false;"><i class="fa fa-minus" aria-hidden="true"></i></span> -->
-                                                    <input type="number" class="qty-text priceNum" id="qty" name="quantity" value="<?php echo $result['quantityOrdered']; ?>" readonly>
+                                                    <input type="number" class="qty-text" id="qty" name="quantity" value="<?php echo $result['quantityOrdered']; ?>" readonly>
                                                     <!-- <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-plus" aria-hidden="true"></i></span> -->
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
                                     <?php
-                                            $total = 0;
-                                            $total = $total + $result['priceEach'];
+                                            $get_amount = "SELECT subtotal, point FROM `orders` WHERE orderNumber = $id";
+                                            $get_amount_query = mysqli_query($connect, $get_amount);
+                                            $amount = mysqli_fetch_array($get_amount_query, MYSQLI_ASSOC);
+                                            if (!is_null($amount['subtotal']) AND !is_null($amount['point'])) {
+                                                $total = $amount['subtotal'];
+                                                $point = $amount['point'];
+                                            }
+                                            else {
+                                                $point = 0;
+                                                $total = 0;
+                                                $total = $total + $result['priceEach'];
+                                            }
+                                            
                                         }
                                     ?>
                                 </tbody>
@@ -203,7 +214,8 @@
                         <div class="cart-summary" id="cart-summary">
                             <h5>Order Summary</h5>
                             <ul class="summary-table">
-                                <li><span>subtotal:</span> $<span class="priceNum"><?php echo $total; ?></span></li>
+                                <li><span>subtotal:</span> $<span><?php echo $total; ?></span></li>
+                                <li><span>Point:</span> $<span><?php echo $point; ?></span></li>
                             </ul>
                             <label for="exampleFormControlInput1">Customer Name</label>
                             <input class="form-control" type="text" placeholder="<?php echo $result["customerName"]; ?>" readonly>

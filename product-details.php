@@ -222,7 +222,7 @@
 
         <?php
         $id = $_GET['id'];
-        $sql = "SELECT * FROM `products` JOIN `branches` ON products.productCode = branches.productCode JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productCode = '$id'";
+        $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productCode = '$id'";
         $query = mysqli_query($connect, $sql);
         while ($result = mysqli_fetch_array($query, MYSQLI_ASSOC)) {
         ?>
@@ -289,12 +289,12 @@
                                 </div>
                                 <!-- Avaiable -->
                                 <?php
-                                    $x1 = "SELECT officeCode,sum(qty) FROM `branches` WHERE productCode = '$id' GROUP BY officeCode";
+                                    $x1 = "SELECT branches.officeCode, branches.qty, offices.city FROM `branches` JOIN offices ON branches.officeCode = offices.officeCode WHERE productCode = '$id'";
                                     $x1_query = mysqli_query($connect, $x1);
                                     while ($x1_result = mysqli_fetch_array($x1_query, MYSQLI_ASSOC))
                                     {
                                 ?>
-                                <p class="avaibility"><i class="fa fa-circle"></i> In Stock <b><?php echo $x1_result['sum(qty)']; ?></b> at Branch <?php echo $x1_result['officeCode']; ?></p>
+                                <p class="avaibility"><i class="fa fa-circle"></i> In Stock <b><?php echo $x1_result['qty']; ?></b> at <?php echo $x1_result['city']; ?> Store</p>
                                 
                                 <?php 
                                     }
@@ -316,15 +316,11 @@
                                     <div class="quantity">
                                         <span class="qty-minus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i class="fa fa-caret-down" aria-hidden="true"></i></span>
                                         <?php
-                                            $x2 = "SELECT sum(qty) FROM `branches` WHERE productCode = '$id' AND officeCode = '" . $_SESSION['empOffice'] . "' GROUP BY officeCode";
-                                            $x2_query = mysqli_query($connect, $x1);
-                                            while ($x2_result = mysqli_fetch_array($x2_query, MYSQLI_ASSOC))
-                                            {
+                                            $x2 = "SELECT qty FROM `branches` WHERE productCode = '$id' AND officeCode = '" . $_SESSION['empOffice'] . "'";
+                                            $x2_query = mysqli_query($connect, $x2);
+                                            $x2_result = mysqli_fetch_array($x2_query, MYSQLI_ASSOC);
                                         ?>
-                                        <input type="number" class="qty-text" id="qty" step="1" min="1" max="<?php echo $x2_result['sum(qty)']; ?>" name="quantity" value="1">
-                                        <?php
-                                            }
-                                        ?>
+                                        <input type="number" class="qty-text" id="qty" step="1" min="1" max="<?php echo $x2_result['qty']; ?>" name="quantity" value="1">                                        
                                         <span class="qty-plus" onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i class="fa fa-caret-up" aria-hidden="true"></i></span>
                                     </div>
                                 </div>
