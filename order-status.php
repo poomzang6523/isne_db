@@ -16,7 +16,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title><?php echo $_GET['id']; ?> - Status</title>
+    <title><?php echo $_GET['id']; ?> - Status /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -320,43 +320,62 @@
         mysqli_query($connect, $update);
         echo "<script>window.location = 'order.php'; </script>";
     }
-    if(isset($_POST['process'])) {
-        $checkNo_s = "SELECT checkNumber FROM payments WHERE checkNumber='" . $_POST['cheque'] . "' ";
-        //$checkNo_q = mysqli_query($connect, $checkNo_s);
-        echo $checkNo_s;
-        if($result = mysqli_query($connect, $checkNo_s))
+    if(isset($_POST['process'])) 
+    {
+        if($_POST['shipped_date'] != '' AND $_POST['cheque'] != '')
         {
-            if (mysqli_num_rows($result) <= 0)
+            $checkNo_s = "SELECT checkNumber FROM payments WHERE checkNumber='" . $_POST['cheque'] . "' ";
+            echo $checkNo_s;
+            if($result = mysqli_query($connect, $checkNo_s))
             {
-                $get_amount = "SELECT subtotal FROM `orders` WHERE orderNumber = $id";
-                $get_amount_query = mysqli_query($connect, $get_amount);
-                $total_amount = mysqli_fetch_array($get_amount_query, MYSQLI_ASSOC);
-                $total = $total_amount['subtotal'];
-                $pay = "INSERT INTO `payments` (`customerNumber`, `checkNumber`, `paymentDate`, `amount`) VALUES ('" . $_POST['cusNo'] . "', '" . $_POST['cheque'] . "', CURRENT_DATE, '$total')";
-                mysqli_query($connect, $pay);
-                $update_status = "UPDATE `orders` SET `status` = 'In Process' WHERE `orders`.`orderNumber` = '" . $_GET['id'] . "'";
-                mysqli_query($connect, $update_status);
-                echo "<script>
-                    
+                if (mysqli_num_rows($result) <= 0)
+                {
+                    $get_amount = "SELECT subtotal FROM `orders` WHERE orderNumber = $id";
+                    $get_amount_query = mysqli_query($connect, $get_amount);
+                    $total_amount = mysqli_fetch_array($get_amount_query, MYSQLI_ASSOC);
+                    $total = $total_amount['subtotal'];
+                    $pay = "INSERT INTO `payments` (`customerNumber`, `checkNumber`, `paymentDate`, `amount`) VALUES ('" . $_POST['cusNo'] . "', '" . $_POST['cheque'] . "', CURRENT_DATE, '$total')";
+                    mysqli_query($connect, $pay);
+                    $update_status = "UPDATE `orders` SET `status` = 'In Process', shippedDate = '" . $_POST['shipped_date'] . "' WHERE `orders`.`orderNumber` = '" . $_GET['id'] . "'";
+                    mysqli_query($connect, $update_status);
+                    echo "<script>
+                        
+                        Swal.fire({
+                            title: 'Payment Successful!',
+                            text: 'Thank you! Your payment of $$total has been received',
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.value) {
+                                window.location = 'order.php';
+                            }
+                        })
+                    </script>";
+                    //echo "<script>window.location = 'order.php'; </script>";
+                }
+                else
+                {
+                    echo "<script>
                     Swal.fire({
-                        title: 'Payment Successful!',
-                        text: 'Thank you! Your payment of $$total has been received',
-                        icon: 'success',
+                        title: 'Payment Failed!',
+                        text: 'This cheque number not accepted or duplicated',
+                        icon: 'error',
                         confirmButtonText: 'OK'
                     }).then((result) => {
                         if (result.value) {
-                            window.location = 'order.php';
+                            window.location = 'order-status.php?id=$id';
                         }
                     })
-                </script>";
-                //echo "<script>window.location = 'order.php'; </script>";
+                    </script>";
+                }
             }
-            else
-            {
-                echo "<script>
+        }
+        else
+        {
+        echo "<script>
                 Swal.fire({
-                    title: 'Payment Failed!',
-                    text: 'This cheque number not accepted or duplicated',
+                    title: 'Error while insert value to database',
+                    text: 'Failed to submit order status form, Please try again',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 }).then((result) => {
@@ -365,20 +384,7 @@
                     }
                 })
                 </script>";
-            }
         }
-        // while ($checkNo = mysqli_fetch_array($checkNo_q, MYSQLI_ASSOC)) 
-        // {
-        //     if($checkNo['checkNumber'] != $_POST['cheque']) 
-        //     {
-        //         $get_amount = "SELECT subtotal FROM `orders` WHERE orderNumber = $id";
-        //         $get_amount_query = mysqli_query($connect, $get_amount);
-        //         $total_amount = mysqli_fetch_array($get_amount_query, MYSQLI_ASSOC);
-        //         $total = $total_amount['subtotal'];
-        //         $pay = "INSERT INTO `payments` (`customerNumber`, `checkNumber`, `paymentDate`, `amount`) VALUES ('" . $_POST['cusNo'] . "', '" . $_POST['cheque'] . "', CURRENT_DATE, '$total')";
-        //         mysqli_query($connect, $pay);
-        //         echo "<script>window.location = 'order.php'; </script>";
-        //     }
-        // }
     }
+    
 ?>

@@ -25,7 +25,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Product stock</title>
+    <title>Product stock /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -323,29 +323,66 @@
     if(isset($_POST['transfer'])) {
         $share_product = "UPDATE `branches` SET qty = qty - " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['from'] . "'";
         if(mysqli_query($connect, $share_product)) {
-            $branch_stock = "SELECT officeCode FROM `branches` WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
-            $branch_stock_query = mysqli_query($connect, $branch_stock);
-            if (mysqli_num_rows($branch_stock_query) == 0) {
-                $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
-                if(mysqli_query($connect, $new_branch)) {
-                    echo "<script>window.location = 'product-table.php'; </script>";
-                }
-                else {
-                    echo "<script>alert('Fail to transfer. Please try again'); </script>";
-                }
+            $product_stock = "SELECT qty FROM `branches` WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['from'] . "'";
+            $product_stock_query = mysqli_query($connect, $product_stock);
+            $result = mysqli_fetch_array($product_stock_query, MYSQLI_ASSOC);
+            if ($result['qty'] < 0) {
+                $return_product = "UPDATE `branches` SET qty = qty + " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['from'] . "'";
+                mysqli_query($connect, $return_product);
+                echo "<script>
+                Swal.fire(
+                    'Failed to transfer this product',
+                    'The quantity of the product is not enough. Please try again',
+                    'error'
+                  )
+                </script>";
             }
             else {
-                $update_branch_qty = "UPDATE `branches` SET qty = qty + " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
-                if (mysqli_query($connect, $update_branch_qty)) {
-                    echo "<script>window.location = 'product-table.php'; </script>";
+                $branch_stock = "SELECT officeCode FROM `branches` WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
+                $branch_stock_query = mysqli_query($connect, $branch_stock);
+                if (mysqli_num_rows($branch_stock_query) == 0) {
+                    $new_branch = "INSERT INTO `branches` VALUES ('" . $_GET['id'] . "', '" . $_POST['to'] . "', '" . $_POST['quantity'] . "')";
+                    if(mysqli_query($connect, $new_branch)) {
+                        echo "<script>window.location = 'product-table.php'; </script>";
+                    }
+                    else {
+                        //echo "<script>alert('Fail to transfer. Please try again'); </script>";
+                        echo "<script>
+                                Swal.fire(
+                                    'Failed to transfer this product',
+                                    'Something error while querying to database. Please try again',
+                                    'error'
+                                )
+                            </script>";
+                    }
                 }
                 else {
-                    echo "<script>alert('Fail to transfer. Please try again'); </script>";
+                    $update_branch_qty = "UPDATE `branches` SET qty = qty + " . $_POST['quantity'] . " WHERE productCode = '" . $_GET['id'] . "' AND officeCode = '" . $_POST['to'] . "'";
+                    if (mysqli_query($connect, $update_branch_qty)) {
+                        echo "<script>window.location = 'product-table.php'; </script>";
+                    }
+                    else {
+                        //echo "<script>alert('Fail to transfer. Please try again'); </script>";
+                        echo "<script>
+                                Swal.fire(
+                                    'Failed to transfer this product',
+                                    'Something error while querying to database. Please try again',
+                                    'error'
+                                )
+                            </script>";
+                    }
                 }
             }
         }
         else {
-            echo "<script>alert('Fail to transfer. Please try again'); </script>";
+            //echo "<script>alert('Fail to transfer. Please try again'); </script>";
+            echo "<script>
+                    Swal.fire(
+                        'Failed to transfer this product',
+                        'Something error while querying to database. Please try again',
+                        'error'
+                    )
+                </script>";
         }
     }
         // while ($branch = mysqli_fetch_array($branch_stock_query, MYSQLI_ASSOC)) {

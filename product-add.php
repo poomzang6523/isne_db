@@ -25,7 +25,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Add Product</title>
+    <title>Add Product /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -174,6 +174,7 @@
                             <div class="form-group col-md-4">
                               <label>Product Code</label>
                               <input type="text" class="form-control" name="pCode" id="pCode">
+                              <small class="form-text text-muted">e.g. S10_1234</small>
                             </div>
                             <div class="form-group col-md-6">
                                 <label>Product Name</label>
@@ -182,6 +183,7 @@
                             <div class="form-group col-md-2">
                               <label>Scale</label>
                               <input type="text" class="form-control" name="pScale" id="pScale">
+                              <small class="form-text text-muted">e.g. 1:10</small>
                             </div>
                         </div>
                         <div class="form-row">
@@ -209,7 +211,7 @@
                             <textarea class="form-control" rows="3" name="pDes"></textarea>
                         </div>  
                         <div class="form-group row">
-                            <label class="col-sm-2 col-form-label">Qty stock</label>
+                            <label class="col-sm-2 col-form-label">Quantity stock</label>
                             <div class="col-sm-10">
                               <input type="text" class="form-control" name="pQty" id="pQty">
                             </div>
@@ -361,7 +363,7 @@
     
     bootstrapValidate('#pMSRP', 'numeric:Please only enter numeric characters!')
     bootstrapValidate('#pBuy', 'numeric:Please only enter numeric characters!')
-    bootstrapValidate('#pCode', 'numeric:Please only enter numeric characters!')
+    bootstrapValidate('#pCode', 'regex:^[A-Z0-9\\_]*$:Please fulfill correct regex')
     bootstrapValidate('#pQty', 'numeric:Please only enter numeric characters!')
     bootstrapValidate('#pScale', 'regex:^(1+):([0-9]+)$:Please fulfill correct regex')
 
@@ -376,7 +378,7 @@
             echo "<script>alert('Qty stock, Buy price, MSRP must be a number')</script>";
         }
         else {
-            $addproduct = "INSERT INTO `products` (`productCode`, `productName`, `productLine`, `productScale`, `productVendor`, `productDescription`, `quantityInStock`, `buyPrice`, `MSRP`) VALUES ('" . $_POST['pCode'] . "', '" . $_POST['pName'] . "', '" . $_POST['pLine'] . "', '" . $_POST['pScale'] . "', '" . $_POST['pVendor'] . "', '" . $_POST['pDes'] . "', '" . $_POST['pQty'] . "', '" . $_POST['pBuy'] . "', '" . $_POST['pMSRP'] . "');";
+            $addproduct = "INSERT INTO `products` (`productCode`, `productName`, `productLine`, `productScale`, `productVendor`, `productDescription`, `quantityInStock`, `buyPrice`, `MSRP`, `recorded_date`) VALUES ('" . $_POST['pCode'] . "', '" . $_POST['pName'] . "', '" . $_POST['pLine'] . "', '" . $_POST['pScale'] . "', '" . $_POST['pVendor'] . "', '" . $_POST['pDes'] . "', '" . $_POST['pQty'] . "', '" . $_POST['pBuy'] . "', '" . $_POST['pMSRP'] . "', CURRENT_DATE);";
             $addproduct .= "INSERT INTO `branches` (`productCode`, `officeCode`, `qty`) VALUES ('" . $_POST['pCode'] . "', '" . $_SESSION['empOffice'] . "', '" . $_POST['pQty'] . "')";
             if(!mysqli_multi_query($connect, $addproduct)) {
                 echo "<script>alert('Fail to add. Please try again')</script>";

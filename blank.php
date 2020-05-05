@@ -12,18 +12,46 @@
     <link rel="stylesheet" href="css/core-style.css">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
-    <script src="js/alert.js"></script>
+    
 </head>
+<body>
 <?php
 if(isset($_GET['alert']))
 {
+    $id = $_GET['id'];
     if($_GET['alert'] == 'already')
     {
-        echo '<body onload="openAlert();">';
+        echo "<script>
+        Swal.fire({
+            icon: 'warning',
+            text: 'This item already added to cart'
+          }).then((result) => {
+            if (result.value) {
+                window.location = 'product-details.php?id=$id';
+            }
+          })
+        </script>";
     }
     else if($_GET['alert'] == 'added')
     {
-        echo '<body onload="openAlert1();">';
+        echo "<script>
+        Swal.fire({
+            icon: 'success',
+            text: 'Item added to cart successfully',
+            showCancelButton: true,
+            cancelButtonText: 'Continue to shopping',
+            confirmButtonText: 'Checkout',
+            cancelButtonColor: '#28a745',
+            reverseButtons: true
+          }).then((result) => {
+            if (result.value) {
+                window.location.assign('cart.php');
+            }
+            else{
+                window.location = 'product-details.php?id=$id';
+            }
+          })
+        </script>";
     }
 } 
 ?>

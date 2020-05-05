@@ -25,7 +25,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Cart</title>
+    <title>Cart /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -216,6 +216,7 @@
                                 <li><span>Subtotal:</span> $<span id="subtotal"><?php echo $total; ?></span></li>
                                 <li><span>Discount:</span> %<span id="percent">0</span></li>
                                 <li><span>Total:</span> $<span id="total"><?php echo $total; ?></span></li>
+                                <input type="hidden" id="total_dis" name="total_dis" value="<?php echo $total; ?>">
                                 <li><span>Point earned:</span> <span><?php echo (floor(($total/100)) * 3); ?></span></li>
                                 <input type="hidden" class="form-control" id="total" name="total" value="<?php echo $total; ?>">
                                 <input type="hidden" class="form-control" name="pointReceive" value="<?php echo (floor(($total/100)) * 3); ?>">
@@ -382,7 +383,7 @@
             $query_orderNo = mysqli_query($connect, $get_orderNo);
             $result = mysqli_fetch_array($query_orderNo, MYSQLI_ASSOC);
             $orderNo = $result['orderNumber'] + 1;
-            $place_order = "INSERT INTO `orders` (`orderNumber`, `orderDate`, `requiredDate`, `shippedDate`, `status`, `comments`, `customerNumber`, `subtotal`, `point`) VALUES ('$orderNo', CURRENT_TIME, '" . $_POST['required_d'] . "', NULL, 'In Progress', '" . $_POST['comments'] . "','" . $_POST['customer'] . "', '" . $_POST['total'] . "', '" . $_POST['pointReceive'] . "')";
+            $place_order = "INSERT INTO `orders` (`orderNumber`, `orderDate`, `requiredDate`, `shippedDate`, `status`, `comments`, `customerNumber`, `subtotal`, `point`) VALUES ('$orderNo', CURRENT_TIME, '" . $_POST['required_d'] . "', NULL, 'In Progress', '" . $_POST['comments'] . "','" . $_POST['customer'] . "', '" . $_POST['total_dis'] . "', '" . $_POST['pointReceive'] . "')";
             mysqli_query($connect, $place_order);
             foreach($_SESSION['shopping_cart'] as $keys => $values) {
                 $id = $values['id'];

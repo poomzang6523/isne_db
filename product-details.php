@@ -30,7 +30,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title><?php echo $data['productName']; ?></title>
+    <title><?php echo $data['productName']; ?> /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -54,11 +54,11 @@
                             'img' => $_POST['hd_img']
                         );
                         $_SESSION['shopping_cart'][$count] = $item_array;
-                        echo "<script>window.location='blank.php?alert=added'</script>";
+                        echo "<script>window.location='blank.php?alert=added&id=$id'</script>";
                         
                     }
                     else {
-                        echo "<script>window.location='blank.php?alert=already'</script>";
+                        echo "<script>window.location='blank.php?alert=already&id=$id'</script>";
                     }
                 }
                 else {
@@ -70,7 +70,7 @@
                         'img' => $_POST['hd_img']
                     );
                     $_SESSION['shopping_cart'][0] = $item_array;
-                    echo "<script>window.location='blank.php?alert=added'</script>";
+                    echo "<script>window.location='blank.php?alert=added&id=$id'</script>";
                 }
             }
         
@@ -157,7 +157,7 @@
                     <ul>
                         <li><a href="home.php">Home</a></li>
                         <li><a href="product-add.php">Add Product</a></li>
-                        <li><a href="product-table.php">Product</a></li>
+                        <li class="active"><a href="product-table.php">Product</a></li>
                         <li><a href="cart.php">Cart</a></li>
                         <li><a href="order.php">Order</a></li>
                         <li><a href="discount.php">Discount Generate</a></li>
@@ -239,30 +239,30 @@
                                     </li>
                                     <li data-target="#product_details_slider" data-slide-to="1" style="background-image: url(img/product-img/<?php echo $result['image2']; ?>);">
                                     </li>
-                                    <li data-target="#product_details_slider" data-slide-to="2" style="background-image: url(img/product-img/pro-big-3.jpg);">
+                                    <li data-target="#product_details_slider" data-slide-to="2" style="background-image: url(img/product-img/<?php echo $result['image3']; ?>);">
                                     </li>
-                                    <li data-target="#product_details_slider" data-slide-to="3" style="background-image: url(img/product-img/pro-big-4.jpg);">
+                                    <li data-target="#product_details_slider" data-slide-to="3" style="background-image: url(img/product-img/<?php echo $result['image4']; ?>);">
                                     </li>
                                 </ol>
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
                                         <a class="gallery_img" href="img/product-img/<?php echo $result['image']; ?>">
-                                            <img class="d-block w-100" src="img/product-img/<?php echo $result['image']; ?>" alt="First slide">
+                                            <img class="d-block w-100" src="img/product-img/<?php echo $result['image']; ?>">
                                         </a>
                                     </div>
                                     <div class="carousel-item">
                                         <a class="gallery_img" href="img/product-img/<?php echo $result['image2']; ?>">
-                                            <img class="d-block w-100" src="img/product-img/<?php echo $result['image2']; ?>" alt="Second slide">
+                                            <img class="d-block w-100" src="img/product-img/<?php echo $result['image2']; ?>">
                                         </a>
                                     </div>
                                     <div class="carousel-item">
-                                        <a class="gallery_img" href="img/product-img/pro-big-3.jpg">
-                                            <img class="d-block w-100" src="img/product-img/pro-big-3.jpg" alt="Third slide">
+                                        <a class="gallery_img" href="img/product-img/<?php echo $result['image3']; ?>">
+                                            <img class="d-block w-100" src="img/product-img/<?php echo $result['image3']; ?>">
                                         </a>
                                     </div>
                                     <div class="carousel-item">
-                                        <a class="gallery_img" href="img/product-img/pro-big-4.jpg">
-                                            <img class="d-block w-100" src="img/product-img/pro-big-4.jpg" alt="Fourth slide">
+                                        <a class="gallery_img" href="img/product-img/<?php echo $result['image4']; ?>">
+                                            <img class="d-block w-100" src="img/product-img/<?php echo $result['image4']; ?>">
                                         </a>
                                     </div>
                                 </div>
@@ -276,6 +276,7 @@
                                 <div class="line"></div>
                                 <p class="product-price">$<?php echo $result['MSRP']; ?></p>
                                 <h6><?php echo $result['productName']; ?></h6>
+                                <small class="form-text text-muted">Record Date: <?php echo $result['recorded_date']; ?></small>
                                 
                                 <!-- Ratings & Review -->
                                 <div class="ratings-review mb-15 d-flex align-items-center justify-content-between">

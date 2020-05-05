@@ -23,7 +23,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Employee List</title>
+    <title>Employee List /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -191,14 +191,7 @@
                                     if ($result["jobTitle"] == "Sales Manager (APAC)") {
                             ?>
                                         <td>
-                                            <!-- <select class="form-control" id="job">
-                                                <option value="<?php //echo $result["jobTitle"]; ?>" selected><?php //echo $result["jobTitle"]; ?></option>
-                                                <option value="Sale Manager (EMEA)">Sale Manager (EMEA)</option>
-                                                <option value="Sales Manager (NA)">Sales Manager (NA)</option>
-                                                <option value="Sales Rep">Sales Rep</option>
-                                            </select> -->
                                             <div class="dropdown show">
-                                                
                                                 <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <?php echo $result["jobTitle"]; ?>
                                                 </button>
@@ -215,18 +208,12 @@
                                     else if ($result["jobTitle"] == "Sale Manager (EMEA)") {
                             ?>
                                         <td>
-                                            <!-- <select class="form-control">
-                                                <option value="<?php //echo $result["jobTitle"]; ?>" selected><?php //echo $result["jobTitle"]; ?></option>
-                                                <option value="Sales Manager (APAC)">Sale Manager (APAC)</option>
-                                                <option value="Sales Manager (NA)">Sales Manager (NA)</option>
-                                                <option value="Sales Rep">Sales Rep</option>
-                                            </select> -->
                                             <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <?php echo $result["jobTitle"]; ?>
                                                 </button>
 
                                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (APAC)">Sale Manager (EMEA)</a>
+                                                    <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (APAC)">Sale Manager (APAC)</a>
                                                     <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Manager (NA)">Sales Manager (NA)</a>
                                                     <a class="dropdown-item" href="employee-updatejob.php?empid=<?php echo $result["employeeNumber"]; ?>&prev=<?php echo $result["jobTitle"]; ?>&to=Sales Rep">Sales Rep</a>
                                                 </div>
@@ -236,12 +223,6 @@
                                     else if ($result["jobTitle"] == "Sales Manager (NA)") {
                             ?>
                                         <td>
-                                            <!-- <select class="form-control">
-                                                <option value="<?php //echo $result["jobTitle"]; ?>" selected><?php //echo $result["jobTitle"]; ?></option>
-                                                <option value="Sales Manager (APAC)">Sales Manager (APAC)</option>
-                                                <option value="Sale Manager (EMEA)">Sale Manager (EMEA)</option>
-                                                <option value="Sales Rep">Sales Rep</option>
-                                            </select> -->
                                             <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <?php echo $result["jobTitle"]; ?>
                                                 </button>

@@ -79,6 +79,7 @@ function checkDis(){
             var total = subtotal - (subtotal*percent);
             console.log('Subtotal:'+subtotal+'percent'+percent+'total'+total);
             document.getElementById("total").textContent=total;
+            document.getElementById("total_dis").value = total;
 					}
 				});
       });

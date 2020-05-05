@@ -1,4 +1,5 @@
-function openAlert() {
+function openAlert(id) {
+  console.log(id);
       Swal.fire({
         icon: 'warning',
         text: 'This item already added to cart'
@@ -8,8 +9,8 @@ function openAlert() {
         }
       })
 }
-function openAlert1() {
-    
+function openAlert1(id) {
+    console.log(id);
     Swal.fire({
       icon: 'success',
       text: 'Item added to cart successfully',

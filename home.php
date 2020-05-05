@@ -25,7 +25,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Home</title>
+    <title>Home /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -187,6 +187,9 @@
                             else if (isset($_GET['scale'])) {
                                 $count = "SELECT count(*) FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productScale = '" . $_GET['scale'] . "'";
                             }
+                            else if (isset($_GET['line'])) {
+                                $count = "SELECT count(*) FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productLine = '" . $_GET['line'] . "'";
+                            }
                             else if (isset($_GET['search'])) {
                                 $text = $_GET['search'];
                                 $count = "SELECT count(*) FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productName LIKE '%$text%' OR products.productLine LIKE '%$text%' OR products.productVendor LIKE '%$text%' OR products.productDescription LIKE '%$text%' ";
@@ -199,7 +202,6 @@
                             ?>
                             <div class="total-products">
                                 <p>Showing <?php echo $number['count(*)']; ?> Products</p>
-                                
                             </div>
                             <?php
                                 }
@@ -207,10 +209,27 @@
                             ?>
                             <!-- Sorting -->
                             <div class="product-sorting d-flex">
+
                                 <div class="sort-by-date d-flex align-items-center mr-15">
-                                    <!-- <p> Scale </p> -->
-                                    <!-- <form action="" method="POST">
-                                        <select name="scale"> -->
+                                        <div class="btn-group">
+                                        <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Productline
+                                        </button>
+                                            <div class="dropdown-menu">
+                                        <?php
+                                            $line = "SELECT DISTINCT productLine FROM `products` ORDER BY productLine";
+                                            $line_query = mysqli_query($connect, $line);
+                                            while ($line_type = mysqli_fetch_array($line_query, MYSQLI_ASSOC)) {
+                                        ?>
+                                            <a class="dropdown-item" href="home.php?line=<?php echo $line_type['productLine']; ?>"> <?php echo $line_type['productLine']; ?> </a>
+                                        <?php
+                                            }
+                                        ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="sort-by-date d-flex align-items-center mr-15">
                                         <div class="btn-group">
                                         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Scale
@@ -221,24 +240,16 @@
                                             $scale_query = mysqli_query($connect, $scale);
                                             while ($scale_type = mysqli_fetch_array($scale_query, MYSQLI_ASSOC)) {
                                         ?>
-                                            <!-- <option value="<?php// echo $scale_type['productScale']; ?>"><?php// echo $scale_type['productScale']; ?></option> -->
-                                                <a class="dropdown-item" href="home.php?scale=<?php echo $scale_type['productScale']; ?>"> <?php echo $scale_type['productScale']; ?> </a>
-                                                
+                                            <a class="dropdown-item" href="home.php?scale=<?php echo $scale_type['productScale']; ?>"> <?php echo $scale_type['productScale']; ?> </a>
                                         <?php
                                             }
                                         ?>
                                         </div>
                                     </div>
-                                        <!-- </select>
-                                    </form> -->
                                     
                                 </div> 
                                 
-                               
                                 <div class="sort-by-date d-flex align-items-center mr-15">
-                                    <!-- <p>Vendor</p>
-                                    <form action="" method="POST">
-                                        <select name="vendor"> -->
                                         <div class="btn-group">
                                         <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             Vendor
@@ -249,14 +260,10 @@
                                             $vendor_query = mysqli_query($connect, $vendor);
                                             while ($vendor_type = mysqli_fetch_array($vendor_query, MYSQLI_ASSOC)) {
                                         ?>
-                                            <!-- <option value="<?php //echo $vendor_type['productVendor']; ?>"><?php //echo $vendor_type['productVendor']; ?></option> -->
                                             <a class="dropdown-item" href="home.php?vendor=<?php echo $vendor_type['productVendor']; ?>"> <?php echo $vendor_type['productVendor']; ?> </a>
                                         <?php
                                             }
                                         ?>
-                                        <!-- </select> -->
-                                        <!-- <input class="btn btn-info" type="submit" name="vendor" value="Vendor"> -->
-                                    <!-- </form> -->
                                         </div>
                                     </div>
                                 </div>
@@ -283,6 +290,11 @@
                     {
                         $text = $_GET['vendor'];
                         $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productVendor = '$text'";
+                    }
+                    else if (isset($_GET['line'])) 
+                    {
+                        $text = $_GET['line'];
+                        $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine WHERE products.productLine = '$text'";
                     }
                     else {
                         $sql = "SELECT * FROM `products` JOIN `productlines` ON productlines.productLine = products.productLine ORDER BY products.productCode ASC";

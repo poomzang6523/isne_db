@@ -16,7 +16,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Update Product Database</title>
+    <title>Update Product Database /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -196,7 +196,7 @@
                             </div>
                         </div> -->
                         <div class="form-group">
-                            <label>Price</label>
+                            <label>MSRP</label>
                             <div class="input-group mb-2">
                               <div class="input-group-prepend">
                                 <div class="input-group-text">USD</div>

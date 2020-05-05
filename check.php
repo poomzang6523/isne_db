@@ -11,7 +11,7 @@
             else
             {
                 $result1 = mysqli_fetch_array($result, MYSQLI_ASSOC);
-                if($result1['count'] >= 0 AND $result1['expireDate'] >= date('Y-m-d'))
+                if($result1['count'] > 0 AND $result1['expireDate'] >= date('Y-m-d'))
                 {
                     echo $result1['discount'];
                 }

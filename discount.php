@@ -25,7 +25,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Discount Generater</title>
+    <title>Discount Generater /DBMS Project</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -302,17 +302,17 @@ bootstrapValidate('#codeNo', 'alphanum:Please only enter alphanumeric characters
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
     {
-        $con = mysqli_connect("localhost","root","","db_261342");
+        include('connect.php');
         session_start();
         if (isset($_POST['codeNo']) AND isset($_POST['percent']) AND isset($_POST['date']) AND isset($_POST['used_time']))
     {
-        $codeNo = htmlentities(mysqli_real_escape_string($con, $_POST['codeNo']));
+        $codeNo = htmlentities(mysqli_real_escape_string($connect, $_POST['codeNo']));
         $codeNo = strtoupper($codeNo);
-        $discount = htmlentities(mysqli_real_escape_string($con, $_POST['percent']));
-        $date = htmlentities(mysqli_real_escape_string($con, $_POST['date']));
-        $time = htmlentities(mysqli_real_escape_string($con, $_POST['used_time']));
+        $discount = htmlentities(mysqli_real_escape_string($connect, $_POST['percent']));
+        $date = htmlentities(mysqli_real_escape_string($connect, $_POST['date']));
+        $time = htmlentities(mysqli_real_escape_string($connect, $_POST['used_time']));
         $update = "INSERT INTO `promotions` (`code`, `discount`, `expireDate`, `count`) VALUES ('$codeNo', '$discount', '$date', '$time')";
-        $run_update = mysqli_query($con,$update);
+        $run_update = mysqli_query($connect,$update);
         if($run_update) {
             echo "<script>
 								Swal.fire({
